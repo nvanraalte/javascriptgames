@@ -1,0 +1,700 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div>
+        <a href="index.html">Home</a>
+    </div>
+    <script id=clientEventHandlersJS language=javascript>
+<!--
+
+    function onKeyPress(event) {
+        if (document.layers) {
+            lpKey = event.which;
+        } else {
+            lpKey = window.event.keyCode;
+        }
+        switch (lpKey) {
+            case 56:
+                ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);
+                break;
+            case 53:
+                ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);
+                break;
+            case 55:
+                ofNavigate.NavigateTurn(LF_MAP_MOVE_TURNLEFT);
+                break;
+            case 57:
+                ofNavigate.NavigateTurn(LF_MAP_MOVE_TURNRIGHT);
+                break;
+            case 52:
+                ofNavigate.NavigateMove(LF_MAP_MOVE_STEPLEFT);
+                break;
+            case 54:
+                ofNavigate.NavigateMove(LF_MAP_MOVE_STEPRIGHT);
+                break;
+        }
+    }
+
+var LF_MAP_ROW_COUNT = Number(2);
+var LF_MAP_COL_COUNT = Number(2);
+
+var LF_MAP_ROW_FIRST = Number(0);
+var LF_MAP_COL_FIRST = Number(0);
+
+var LF_MAP_ORIENTATION_NORTH = Number(0);
+var LF_MAP_ORIENTATION_EAST = Number(1);
+var LF_MAP_ORIENTATION_SOUTH = Number(2);
+var LF_MAP_ORIENTATION_WEST = Number(3);
+
+var LF_MAP_GRID_OPEN_NONE = Number(0);
+var LF_MAP_GRID_OPEN_NORTH = Number(1);
+var LF_MAP_GRID_OPEN_EAST = Number(2);
+var LF_MAP_GRID_OPEN_SOUTH = Number(4);
+var LF_MAP_GRID_OPEN_WEST = Number(8);
+
+var LF_MAP_MOVE_FORWARD = Number(0);
+var LF_MAP_MOVE_BACKWARD = Number(2);
+var LF_MAP_MOVE_STEPLEFT = Number(3);
+var LF_MAP_MOVE_STEPRIGHT = Number(1);
+
+var LF_MAP_MOVE_TURNLEFT = Number(-1);
+var LF_MAP_MOVE_TURNRIGHT = Number(1);
+
+var LF_CELL_NOT_FOUND = Number(-1);
+
+var LF_CELL_ROW = Number(0);
+var LF_CELL_COL = Number(1);
+var LF_CELL_OPEN = Number(2);
+
+var LF_LOCAL_RANGE = Number(2);
+
+function Map() {
+    var lpRow = Number(0);
+    var lpCol = Number(0);
+    this.Rows = LF_MAP_ROW_COUNT;
+    this.Cols = LF_MAP_COL_COUNT;
+    this.StartOrientation = LF_MAP_ORIENTATION_NORTH;
+    this.StartRow = LF_MAP_ROW_FIRST;
+    this.StartCol = LF_MAP_COL_FIRST;
+    this.FinishRow = LF_MAP_ROW_COUNT;
+    this.FinishCol = LF_MAP_COL_COUNT;
+    this.CurrentOrientation = this.StartOrientation;
+    this.CurrentRow = this.StartRow;
+    this.CurrentCol = this.StartCol;
+    this.MapMoveTry = MapMoveTry;
+    this.MapMoveDo = MapMoveDo;
+    this.MapTurnTry = MapTurnTry;
+    this.MapTurnDo = MapTurnDo;
+    this.MapAtStart = MapAtStart;
+    this.MapAtFinish = MapAtFinish;
+    this.MapNewGame = MapNewGame;
+    this.Grid = new Array();
+    for (lpRow = LF_MAP_ROW_FIRST; lpRow <= this.Rows; lpRow++) {
+        this.Grid[lpRow] = new Array();
+        for (lpCol = LF_MAP_COL_FIRST; lpCol <= this.Cols; lpCol++) {
+            this.Grid[lpRow][lpCol] = new Array();
+            this.Grid[lpRow][lpCol][LF_MAP_ORIENTATION_NORTH] = (lpRow > LF_MAP_ROW_FIRST);
+            this.Grid[lpRow][lpCol][LF_MAP_ORIENTATION_SOUTH] = (lpRow < this.Rows);
+            this.Grid[lpRow][lpCol][LF_MAP_ORIENTATION_WEST] = (lpCol > LF_MAP_COL_FIRST);
+            this.Grid[lpRow][lpCol][LF_MAP_ORIENTATION_EAST] = (lpCol < this.Cols);
+        }
+    }
+    this.StartTime = new Date();
+}
+
+function MapMoveTry(lpMove) {
+    return this.Grid[this.CurrentRow][this.CurrentCol][CombinedDirection(this.CurrentOrientation, lpMove)];
+}
+
+function MapMoveDo(lpMove) {
+    if (this.MapMoveTry(lpMove) == true) {
+        this.CurrentRow += NextRow(this.CurrentOrientation, lpMove);
+        this.CurrentCol += NextCol(this.CurrentOrientation, lpMove);
+    } else {
+        alert('Unable to move');
+    }
+}
+
+function MapTurnTry(lpTurn) {
+    return true;
+}
+
+function MapTurnDo(lpTurn) {
+    if (this.MapTurnTry(lpTurn) == true) {
+        this.CurrentOrientation = CombinedDirection(this.CurrentOrientation, lpTurn);
+    } else {
+        alert('Unable to turn');
+    }
+}
+
+function MapAtStart() {
+    return (this.CurrentRow == this.StartRow & this.CurrentCol == this.StartCol);
+}
+
+function MapAtFinish() {
+    return (this.CurrentRow == this.FinishRow & this.CurrentCol == this.FinishCol);
+}
+
+function MapNewGame() {
+    var lpRowMin = Number(0);
+    var lpRowMax = Number(0);
+    var lpColMin = Number(0);
+    var lpColMax = Number(0);
+    //Linear array of cells {row,col,opendirections)
+    var lpCell = new Array();
+    //Start with one cell at 0,0 with no open directions
+    lpCurrentCell = 0;
+    lpCell[lpCurrentCell] = new Array();
+    lpCell[lpCurrentCell][LF_CELL_ROW] = 0;
+    lpCell[lpCurrentCell][LF_CELL_COL] = 0;
+    lpCell[lpCurrentCell][LF_CELL_OPEN] = new Array();
+    for (lpDirection = 0; lpDirection < 4; lpDirection++) {
+        lpCell[lpCurrentCell][LF_CELL_OPEN][lpDirection] = false;
+    }
+    bpContinue = 0;
+    while (bpContinue < 60) {
+        bpContinue++;
+        //Move in a random direction a certain number of steps
+        lpOrientation = NewGameRandomOrientation();
+        lpDistance = NewGameRandomDistance();
+        //For each step
+        for (lpStepIndex = 0; lpStepIndex <= lpDistance; lpStepIndex++) {
+            lpNextRow = lpCell[lpCurrentCell][LF_CELL_ROW] + NextRow(lpOrientation, 0);
+            lpNextCol = lpCell[lpCurrentCell][LF_CELL_COL] + NextCol(lpOrientation, 0);
+            if (lpRowMin > lpNextRow) {
+                lpRowMin = lpNextRow;
+            }
+            if (lpRowMax < lpNextRow) {
+                lpRowMax = lpNextRow;
+            }
+            if (lpColMin > lpNextCol) {
+                lpColMin = lpNextCol;
+            }
+            if (lpColMax < lpNextCol) {
+                lpColMax = lpNextCol;
+            }
+            //  Check if the next cell exists
+            lpCellExisting = LF_CELL_NOT_FOUND;
+            for (lpCellIndex = 0; lpCellIndex < lpCell.length; lpCellIndex++) {
+                if (lpNextRow == lpCell[lpCellIndex][LF_CELL_ROW] & lpNextCol == lpCell[lpCellIndex][LF_CELL_COL]) {
+                    lpCellExisting = lpCellIndex;
+                }
+            }
+            if (lpCellExisting == LF_CELL_NOT_FOUND) {
+                //  If the next cell does not exist then make our current cell open in the direction we are travelling and create the next cell open in the direction we have come from
+                lpCell[lpCurrentCell][LF_CELL_OPEN][lpOrientation] = true;
+                lpCurrentCell = lpCell.length;
+                lpCell[lpCurrentCell] = new Array();
+                lpCell[lpCurrentCell][LF_CELL_ROW] = lpNextRow;
+                lpCell[lpCurrentCell][LF_CELL_COL] = lpNextCol;
+                lpCell[lpCurrentCell][LF_CELL_OPEN] = new Array();
+                for (lpDirection = 0; lpDirection < 4; lpDirection++) {
+                    lpCell[lpCurrentCell][LF_CELL_OPEN][lpDirection] = lpDirection == CombinedDirection(lpOrientation, 2);
+                }
+            } else {
+                //  If the next cell exists do we break into the cell
+                if (NewGameBreakIntoNextCell) {
+                    //    If we break into that cell then set the current cell open in the direction we are travelling and set the cell we break into open in the direction we have come from
+                    lpCell[lpCurrentCell][LF_CELL_OPEN][lpOrientation] = true;
+                    lpCell[lpCellExisting][LF_CELL_OPEN][CombinedDirection(lpOrientation, 2)] = true;
+                } else {
+                    //    If we do not break into that cell then at random either go in a different direction or retrace our steps
+                    lpCurrentCell = Math.round(Math.random() * lpCell.length);
+                }
+            }
+        }
+        if (lpCell.length > 0 & NewGameJumpBack()) {
+            lpCurrentCell = Math.round(Math.random() * (lpCell.length - 1));
+        }
+    }
+    //Once the creation map is finished we should have kept a record of the minimum and maximum row and col values which can now be used to correct the values so the map starts from zero zero
+    //Configure a new blank map
+    //    this.MapNewGame(lpRowMax - lpRowMin, lpColMax - lpColMin);
+
+
+    this.Rows = lpRowMax - lpRowMin;
+    this.Cols = lpColMax - lpColMin;
+    this.Grid = new Array();
+    for (lpRow = LF_MAP_ROW_FIRST; lpRow <= this.Rows; lpRow++) {
+        this.Grid[lpRow] = new Array();
+        for (lpCol = LF_MAP_COL_FIRST; lpCol <= this.Cols; lpCol++) {
+            this.Grid[lpRow][lpCol] = new Array;
+            for (lpDirection = 0; lpDirection < 4; lpDirection++) {
+                this.Grid[lpRow][lpCol][lpDirection] = false;
+            }
+        }
+    }
+
+    //For each cell add the cell to the map in its corrected location
+    var lpCuldesacs = new Array();
+    for (lpCellIndex = 0; lpCellIndex < lpCell.length; lpCellIndex++) {
+        this.Grid[lpCell[lpCellIndex][LF_CELL_ROW] - lpRowMin][lpCell[lpCellIndex][LF_CELL_COL] - lpColMin] = lpCell[lpCellIndex][LF_CELL_OPEN];
+        if (NewGameCellIsCuldesac(lpCell[lpCellIndex][LF_CELL_OPEN])) {
+            lpCuldesacs[lpCuldesacs.length] = lpCellIndex;
+        }
+    }
+    if (lpCuldesacs.length < 1) {
+        lpCellStart = 0;
+        lpCellEnd = lpCell.length - 1;
+    } else {
+        lpCuldesacStart = Math.round(Math.random() * (lpCuldesacs.length - 2));
+        lpCuldesacEnd = lpCuldesacStart + 1 + Math.round(Math.random() * (lpCuldesacs.length - 2 - lpCuldesacStart));
+        lpCellStart = lpCuldesacs[lpCuldesacStart];
+        lpCellEnd = lpCuldesacs[lpCuldesacEnd];
+    }
+    this.StartOrientation = NewGameFaceOutOfCuldesac(lpCell[lpCellStart][LF_CELL_OPEN]);
+    this.StartRow = lpCell[lpCellStart][LF_CELL_ROW] - lpRowMin;
+    this.StartCol = lpCell[lpCellStart][LF_CELL_COL] - lpColMin;
+    this.FinishRow = lpCell[lpCellEnd][LF_CELL_ROW] - lpRowMin;
+    this.FinishCol = lpCell[lpCellEnd][LF_CELL_COL] - lpColMin;
+    this.CurrentOrientation = this.StartOrientation;
+    this.CurrentRow = this.StartRow;
+    this.CurrentCol = this.StartCol;
+    this.StartTime = new Date();
+}
+
+// ==========================================================
+
+var ZF_DISPLAY_PLAN = new String('Plan');
+var ZF_DISPLAY_PERSPECTIVE = new String('Perspective');
+var ZF_DISPLAY_LOCAL = new String('Local');
+
+function DisplayPlan() {
+    this.DisplayType = ZF_DISPLAY_PLAN;
+    this.DisplayDiv = document.getElementById('DisplayPlan');
+    this.DisplayShow = DisplayShow;
+    this.DisplayPlanShow = DisplayPlanShow;
+}
+
+function DisplayPerspective() {
+    this.DisplayType = ZF_DISPLAY_PERSPECTIVE;
+    this.DisplayDiv = document.getElementById('DisplayPerspective');
+    this.DisplayShow = DisplayShow;
+    this.DisplayPerspectiveShow = DisplayPerspectiveShow;
+}
+function DisplayLocal() {
+    this.DisplayType = ZF_DISPLAY_LOCAL;
+    this.DisplayDiv = document.getElementById('DisplayLocal');
+    this.DisplayShow = DisplayShow;
+    this.DisplayLocalShow = DisplayLocalShow;
+}
+
+function DisplayShow(opMap) {
+    switch (this.DisplayType) {
+        case ZF_DISPLAY_PLAN:
+            this.DisplayPlanShow(opMap);
+            break;
+        case ZF_DISPLAY_PERSPECTIVE:
+            this.DisplayPerspectiveShow(opMap);
+            break;
+        case ZF_DISPLAY_LOCAL:
+            this.DisplayLocalShow(opMap);
+            break;
+        default:
+            alert('Unknown display type ' + this.DisplayType);
+            break;
+    }
+}
+
+function DisplayPlanShow(opMap) {
+    var zpHTML = new String('');
+    var zpCell = new String('');
+    for (lpRow = LF_MAP_ROW_FIRST; lpRow <= opMap.Rows; lpRow++) {
+        for (lpCol = LF_MAP_COL_FIRST; lpCol <= opMap.Cols; lpCol++) {
+            zpCell = 'Cell';
+            if ((opMap.CurrentRow == lpRow) & (opMap.CurrentCol == lpCol)) {
+                zpCell += 'Full';
+            } else {
+                zpCell += 'Open';
+            }
+            if (opMap.Grid[lpRow][lpCol][LF_MAP_ORIENTATION_NORTH]) {
+                zpCell += 'North';
+            }
+            if (opMap.Grid[lpRow][lpCol][LF_MAP_ORIENTATION_SOUTH]) {
+                zpCell += 'South';
+            }
+            if (opMap.Grid[lpRow][lpCol][LF_MAP_ORIENTATION_EAST]) {
+                zpCell += 'East';
+            }
+            if (opMap.Grid[lpRow][lpCol][LF_MAP_ORIENTATION_WEST]) {
+                zpCell += 'West';
+            }
+            zpHTML += '<IMG SRC="./Maze/Maze_' + zpCell + '.gif">';
+        }
+        zpHTML += '<BR>';
+    }
+    this.DisplayDiv.innerHTML = zpHTML;
+}
+
+function DisplayPerspectiveShow(opMap) {
+    var lpRow = Number(0);
+    var lpCol = Number(0);
+    var zpHTML = new String('');
+    var lpCell = new Array();
+    var bpCell = Boolean(true);
+    var zpOpenLeft = new Array();
+    var zpOpenForward = new Array();
+    var zpOpenRight = new Array();
+    var bpOpenPrevious = Boolean(true);
+    var bpOpen = Boolean(true);
+    var zpSuffix = new String('');
+    for (lpDistance = 0; lpDistance <= 4; lpDistance++) {
+        bpOpenPrevious = bpOpen;
+        lpRow = opMap.CurrentRow + (lpDistance * NextRow(opMap.CurrentOrientation, LF_MAP_MOVE_FORWARD));
+        lpCol = opMap.CurrentCol + (lpDistance * NextCol(opMap.CurrentOrientation, LF_MAP_MOVE_FORWARD));
+        bpCell = bpOpen & (LF_MAP_ROW_FIRST <= lpRow & lpRow <= opMap.Rows) & (LF_MAP_COL_FIRST <= lpCol & lpCol <= opMap.Cols);
+        if (bpCell) {
+            lpCell[lpDistance] = opMap.Grid[opMap.CurrentRow + (lpDistance * NextRow(opMap.CurrentOrientation, LF_MAP_MOVE_FORWARD))][opMap.CurrentCol + (lpDistance * NextCol(opMap.CurrentOrientation, LF_MAP_MOVE_FORWARD))];
+            zpSuffix = '';
+        } else {
+            lpCell[lpDistance] = LF_MAP_GRID_OPEN_NONE;
+        }
+        if (bpCell & lpRow == opMap.StartRow & lpCol == opMap.StartCol) {
+            zpSuffix = 'Start';
+        }
+        if (bpCell & lpRow == opMap.FinishRow & lpCol == opMap.FinishCol) {
+            zpSuffix = 'Finish';
+        }
+        if (bpOpenPrevious) {
+            bpDirectionOpen = bpCell;
+            if (bpCell) {
+                bpDirectionOpen = (lpCell[lpDistance][CombinedDirection(opMap.CurrentOrientation, LF_MAP_MOVE_STEPLEFT)]);
+            }
+            if (bpDirectionOpen) {
+                if (lpDistance == 0) {
+                    zpOpenLeft[lpDistance] = 'HalfLeftOpen';
+                } else {
+                    zpOpenLeft[lpDistance] = 'LeftOpen' + zpSuffix;
+                }
+            } else {
+                zpOpenLeft[lpDistance] = 'LeftClosed' + zpSuffix;
+            }
+        } else {
+            zpOpenLeft[lpDistance] = 'Closed' + zpSuffix;
+        }
+        bpDirectionOpen = bpCell;
+        if (bpCell) {
+            bpDirectionOpen = (lpCell[lpDistance][CombinedDirection(opMap.CurrentOrientation, LF_MAP_MOVE_FORWARD)]);
+        }
+        if (bpDirectionOpen) {
+            zpOpenForward[lpDistance] = 'Open';
+        } else {
+            zpOpenForward[lpDistance] = 'Closed' + zpSuffix;
+            bpOpen = false;
+        }
+        if (bpOpenPrevious) {
+            bpDirectionOpen = bpCell;
+            if (bpCell) {
+                bpDirectionOpen = (lpCell[lpDistance][CombinedDirection(opMap.CurrentOrientation, LF_MAP_MOVE_STEPRIGHT)]);
+            }
+            if (bpDirectionOpen) {
+                if (lpDistance == 0) {
+                    zpOpenRight[lpDistance] = 'HalfRightOpen';
+                } else {
+                    zpOpenRight[lpDistance] = 'RightOpen' + zpSuffix;
+                }
+            } else {
+                zpOpenRight[lpDistance] = 'RightClosed' + zpSuffix;
+            }
+        } else {
+            zpOpenRight[lpDistance] = 'Closed' + zpSuffix;
+        }
+    }
+    zpHTML += '<div style="clear:both;">';
+    zpHTML += '<IMG style="float:left;" height=20 width=50 src="./Maze/Maze_Top' + zpOpenLeft[0] + '.gif" onclick="ofNavigate.NavigateTurn(LF_MAP_MOVE_TURNLEFT);"/>';
+    zpHTML += '<IMG style="float:left;" height=20 width=160 src="./Maze/Maze_TopOpen.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=20 width=50 src="./Maze/Maze_Top' + zpOpenRight[0] + '.gif" onclick="ofNavigate.NavigateTurn(LF_MAP_MOVE_TURNRIGHT);"/>';
+    zpHTML += '</div><div style="clear:both;">';
+    zpHTML += '<IMG style="float:left;" height=13 width=50 src="./Maze/Maze_' + zpOpenLeft[0] + '.gif" onclick="ofNavigate.NavigateTurn(LF_MAP_MOVE_TURNLEFT);"/>';
+    zpHTML += '<IMG style="float:left;" height=13 width=33 src="./Maze/Maze_Top' + zpOpenLeft[1] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=13 width=94 src="./Maze/Maze_Top' + zpOpenForward[0] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=13 width=33 src="./Maze/Maze_Top' + zpOpenRight[1] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=13 width=50 src="./Maze/Maze_' + zpOpenRight[0] + '.gif" onclick="ofNavigate.NavigateTurn(LF_MAP_MOVE_TURNRIGHT);"/>';
+    zpHTML += '</div><div style="clear:both;">';
+    zpHTML += '<IMG style="float:left;" height=9 width=50 src="./Maze/Maze_' + zpOpenLeft[0] + '.gif" onclick="ofNavigate.NavigateTurn(LF_MAP_MOVE_TURNLEFT);"/>';
+    zpHTML += '<IMG style="float:left;" height=9 width=33 src="./Maze/Maze_' + zpOpenLeft[1] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=9 width=22 src="./Maze/Maze_Top' + zpOpenLeft[2] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=9 width=50 src="./Maze/Maze_Top' + zpOpenForward[1] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=9 width=22 src="./Maze/Maze_Top' + zpOpenRight[2] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=9 width=33 src="./Maze/Maze_' + zpOpenRight[1] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=9 width=50 src="./Maze/Maze_' + zpOpenRight[0] + '.gif" onclick="ofNavigate.NavigateTurn(LF_MAP_MOVE_TURNRIGHT);"/>';
+    zpHTML += '</div><div style="clear:both;">';
+    zpHTML += '<IMG style="float:left;" height=6 width=50 src="./Maze/Maze_' + zpOpenLeft[0] + '.gif" onclick="ofNavigate.NavigateTurn(LF_MAP_MOVE_TURNLEFT);"/>';
+    zpHTML += '<IMG style="float:left;" height=6 width=33 src="./Maze/Maze_' + zpOpenLeft[1] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=6 width=22 src="./Maze/Maze_' + zpOpenLeft[2] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=6 width=15 src="./Maze/Maze_Top' + zpOpenLeft[3] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=6 width=20 src="./Maze/Maze_Top' + zpOpenForward[2] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=6 width=15 src="./Maze/Maze_Top' + zpOpenRight[3] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=6 width=22 src="./Maze/Maze_' + zpOpenRight[2] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=6 width=33 src="./Maze/Maze_' + zpOpenRight[1] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=6 width=50 src="./Maze/Maze_' + zpOpenRight[0] + '.gif" onclick="ofNavigate.NavigateTurn(LF_MAP_MOVE_TURNRIGHT);"/>';
+    zpHTML += '</div><div style="clear:both;">';
+    zpHTML += '<IMG style="float:left;" height=4 width=50 src="./Maze/Maze_' + zpOpenLeft[0] + '.gif" onclick="ofNavigate.NavigateTurn(LF_MAP_MOVE_TURNLEFT);"/>';
+    zpHTML += '<IMG style="float:left;" height=4 width=33 src="./Maze/Maze_' + zpOpenLeft[1] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=4 width=22 src="./Maze/Maze_' + zpOpenLeft[2] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=4 width=15 src="./Maze/Maze_' + zpOpenLeft[3] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    if (bpOpenPrevious) {
+        zpHTML += '<IMG style="float:left;" height=4 width=10 src="./Maze/Maze_Open.gif">';
+        zpHTML += '<IMG style="float:left;" height=4 width=10 src="./Maze/Maze_Open.gif">';
+    } else {
+        zpHTML += '<IMG style="float:left;" height=4 width=10 src="./Maze/Maze_Top' + zpOpenLeft[4] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+        zpHTML += '<IMG style="float:left;" height=4 width=10 src="./Maze/Maze_Top' + zpOpenRight[4] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    }
+    zpHTML += '<IMG style="float:left;" height=4 width=15 src="./Maze/Maze_' + zpOpenRight[3] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=4 width=22 src="./Maze/Maze_' + zpOpenRight[2] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=4 width=33 src="./Maze/Maze_' + zpOpenRight[1] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=4 width=50 src="./Maze/Maze_' + zpOpenRight[0] + '.gif" onclick="ofNavigate.NavigateTurn(LF_MAP_MOVE_TURNRIGHT);"/>';
+    zpHTML += '</div><div style="clear:both;">';
+    zpHTML += '<IMG style="float:left;" height=8 width=50 src="./Maze/Maze_' + zpOpenLeft[0] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_STEPLEFT);"/>';
+    zpHTML += '<IMG style="float:left;" height=8 width=33 src="./Maze/Maze_' + zpOpenLeft[1] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=8 width=22 src="./Maze/Maze_' + zpOpenLeft[2] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=8 width=15 src="./Maze/Maze_' + zpOpenLeft[3] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    if (bpOpenPrevious) {
+        zpHTML += '<IMG style="float:left;" height=8 width=10 src="./Maze/Maze_Open.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+        zpHTML += '<IMG style="float:left;" height=8 width=10 src="./Maze/Maze_Open.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    } else {
+        zpHTML += '<IMG style="float:left;" height=8 width=10 src="./Maze/Maze_Bottom' + zpOpenLeft[4] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+        zpHTML += '<IMG style="float:left;" height=8 width=10 src="./Maze/Maze_Bottom' + zpOpenRight[4] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    }
+    zpHTML += '<IMG style="float:left;" height=8 width=15 src="./Maze/Maze_' + zpOpenRight[3] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=8 width=22 src="./Maze/Maze_' + zpOpenRight[2] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=8 width=33 src="./Maze/Maze_' + zpOpenRight[1] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=8 width=50 src="./Maze/Maze_' + zpOpenRight[0] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_STEPRIGHT);"/>';
+    zpHTML += '</div><div style="clear:both;">';
+    zpHTML += '<IMG style="float:left;" height=12 width=50 src="./Maze/Maze_' + zpOpenLeft[0] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_STEPLEFT);"/>';
+    zpHTML += '<IMG style="float:left;" height=12 width=33 src="./Maze/Maze_' + zpOpenLeft[1] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=12 width=22 src="./Maze/Maze_' + zpOpenLeft[2] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=12 width=15 src="./Maze/Maze_Bottom' + zpOpenLeft[3] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=12 width=20 src="./Maze/Maze_Bottom' + zpOpenForward[2] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=12 width=15 src="./Maze/Maze_Bottom' + zpOpenRight[3] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=12 width=22 src="./Maze/Maze_' + zpOpenRight[2] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=12 width=33 src="./Maze/Maze_' + zpOpenRight[1] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=12 width=50 src="./Maze/Maze_' + zpOpenRight[0] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_STEPRIGHT);"/>';
+    zpHTML += '</div><div style="clear:both;">';
+    zpHTML += '<IMG style="float:left;" height=18 width=50 src="./Maze/Maze_' + zpOpenLeft[0] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_STEPLEFT);"/>';
+    zpHTML += '<IMG style="float:left;" height=18 width=33 src="./Maze/Maze_' + zpOpenLeft[1] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=18 width=22 src="./Maze/Maze_Bottom' + zpOpenLeft[2] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=18 width=50 src="./Maze/Maze_Bottom' + zpOpenForward[1] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=18 width=22 src="./Maze/Maze_Bottom' + zpOpenRight[2] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=18 width=33 src="./Maze/Maze_' + zpOpenRight[1] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=18 width=50 src="./Maze/Maze_' + zpOpenRight[0] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_STEPRIGHT);"/>';
+    zpHTML += '</div><div style="clear:both;">';
+    zpHTML += '<IMG style="float:left;" height=27 width=50 src="./Maze/Maze_' + zpOpenLeft[0] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_STEPLEFT);"/>';
+    zpHTML += '<IMG style="float:left;" height=27 width=33 src="./Maze/Maze_Bottom' + zpOpenLeft[1] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=27 width=94 src="./Maze/Maze_Bottom' + zpOpenForward[0] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=27 width=33 src="./Maze/Maze_Bottom' + zpOpenRight[1] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=27 width=50 src="./Maze/Maze_' + zpOpenRight[0] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_STEPRIGHT);"/>';
+    zpHTML += '</div><div style="clear:both;">';
+    zpHTML += '<IMG style="float:left;" height=40 width=50 src="./Maze/Maze_Bottom' + zpOpenLeft[0] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_STEPLEFT);"/>';
+    zpHTML += '<IMG style="float:left;" height=40 width=160 src="./Maze/Maze_BottomOpen.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"/>';
+    zpHTML += '<IMG style="float:left;" height=40 width=50 src="./Maze/Maze_Bottom' + zpOpenRight[0] + '.gif" onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_STEPRIGHT);"/>';
+    zpHTML += '</div>';
+    this.DisplayDiv.innerHTML = zpHTML;
+}
+
+function DisplayLocalShow(opMap) {
+    var zpHTML = new String('');
+    var zpCell = new String('');
+    for (lpRow = opMap.CurrentRow - LF_LOCAL_RANGE; lpRow <= opMap.CurrentRow + LF_LOCAL_RANGE; lpRow++) {
+        zpHTML += '<div style="clear:both;">';
+        for (lpCol = opMap.CurrentCol - LF_LOCAL_RANGE; lpCol <= opMap.CurrentCol + LF_LOCAL_RANGE; lpCol++) {
+            zpCell = 'Cell';
+            if ((opMap.CurrentRow == lpRow) & (opMap.CurrentCol == lpCol)) {
+                zpCell += 'Full';
+            } else {
+                zpCell += 'Open';
+            }
+            if (LF_MAP_ROW_FIRST <= lpRow && lpRow <= opMap.Rows && LF_MAP_COL_FIRST <= lpCol && lpCol <= opMap.Cols) {
+                if (opMap.Grid[lpRow][lpCol][LF_MAP_ORIENTATION_NORTH]) {
+                    zpCell += 'North';
+                }
+                if (opMap.Grid[lpRow][lpCol][LF_MAP_ORIENTATION_SOUTH]) {
+                    zpCell += 'South';
+                }
+                if (opMap.Grid[lpRow][lpCol][LF_MAP_ORIENTATION_EAST]) {
+                    zpCell += 'East';
+                }
+                if (opMap.Grid[lpRow][lpCol][LF_MAP_ORIENTATION_WEST]) {
+                    zpCell += 'West';
+                }
+            }
+            zpHTML += '<IMG style="float:left;" SRC="./Maze/Maze_' + zpCell + '.gif"/>';
+        }
+        zpHTML += '</div>';
+    }
+    this.DisplayDiv.innerHTML = zpHTML;
+}
+
+// ==========================================================
+
+function Navigate(opMap, opDisplay) {
+    var lpDispIndex = Number(0);
+    this.Map = opMap;
+    this.Display = opDisplay;
+    this.NavigateMove = NavigateMove;
+    this.NavigateTurn = NavigateTurn;
+    this.NavigateRestart = NavigateRestart;
+    this.NavigateNewGame = NavigateNewGame;
+    this.NavigateDisplayShow = NavigateDisplayShow;
+    this.NavigateDisplayShow();
+}
+
+function NavigateMove(lpMove) {
+    if (this.Map.MapMoveTry(lpMove)) {
+        this.Map.MapMoveDo(lpMove);
+        this.NavigateDisplayShow();
+        if (this.Map.MapAtStart()) {
+            alert('Back to where we started from');
+        }
+        if (this.Map.MapAtFinish()) {
+            dpDifference = new Date(new Date() - this.Map.StartTime);
+            alert('Finished in ' + dpDifference.getHours() + ':' + dpDifference.getMinutes() + ':' + dpDifference.getSeconds() + '\n' + dpDifference.toString());
+        }
+    }
+}
+
+function NavigateTurn(lpTurn) {
+    if (this.Map.MapTurnTry(lpTurn)) {
+        this.Map.MapTurnDo(lpTurn);
+        this.NavigateDisplayShow();
+    }
+}
+
+function NavigateRestart() {
+    this.Map.CurrentOrientation = this.Map.StartOrientation;
+    this.Map.CurrentRow = this.Map.StartRow;
+    this.Map.CurrentCol = this.Map.StartCol;
+    this.Map.StartTime = new Date();
+    this.NavigateDisplayShow();
+}
+
+function NavigateNewGame() {
+    this.Map.MapNewGame();
+    this.NavigateDisplayShow();
+}
+
+function NavigateDisplayShow() {
+    var lpDispIndex = Number(0);
+    for (lpDispIndex = 0; lpDispIndex < this.Display.length; lpDispIndex++) {
+        this.Display[lpDispIndex].DisplayShow(this.Map);
+    }
+}
+
+// ==========================================================
+
+function CombinedDirection(lpDirectionOne, lpDirectionTwo) {
+    var lpDirection = (lpDirectionOne + lpDirectionTwo);
+    return (lpDirection + (4 * Math.round(0.4 + (lpDirection / -4)))) % 4;
+}
+
+function NextRow(lpOrientation, lpMove) {
+    switch (CombinedDirection(lpOrientation, lpMove)) {
+        case 0:
+            return -1;
+            break;
+        case 2:
+            return 1;
+            break;
+    }
+    return 0;
+}
+
+function NextCol(lpOrientation, lpMove) {
+    switch (CombinedDirection(lpOrientation, lpMove)) {
+        case 1:
+            return 1;
+            break;
+        case 3:
+            return -1;
+            break;
+    }
+    return 0;
+}
+
+function NewGameRandomOrientation() {
+    return Math.round(Math.random() * 3);
+}
+
+function NewGameRandomDistance() {
+    return 1 + Math.round(Math.random() * 3);
+}
+
+function NewGameBreakIntoNextCell() {
+    return Math.random() <= 0.5;
+}
+
+function NewGameJumpBack() {
+    return Math.random() <= 0.5;
+}
+
+function NewGameFaceOutOfCuldesac(lpOpen) {
+    for (lpDirection = 0; lpDirection < 4; lpDirection++) {
+        if (lpOpen[lpDirection]) {
+            return lpDirection;
+        }
+    }
+}
+
+function NewGameCellIsCuldesac(lpOpen) {
+    var lpOpenCount = Number(0);
+    for (lpDirection = 0; lpDirection < 4; lpDirection++) {
+        if (lpOpen[lpDirection]) {
+            lpOpenCount++;
+        }
+    }
+    return (lpOpenCount <= 1);
+}
+
+// ==========================================================
+
+var ofMap = new Map();
+var ofDisplay = new Array();
+var ofNavigate;
+
+//-->
+    </script>
+
+
+    <h2>Maze</h2>
+
+    <div>Your challenge is to solve the maze and go from the yellow start zone to the blue finish zone before you run out of air.</div>
+    <div>To navigate either click on the navigation buttons below the 3D view, or click on the 3D view itself.</div>
+<input id=button1 type=button value="Restart" name=button1 onclick="ofNavigate.NavigateRestart();"/>
+<input id=button1 type=button value="New Game" name=button1 onclick="ofNavigate.NavigateNewGame();"/>
+    <table width="100%">
+        <tr>
+            <td align=CENTER valign=MIDDLE>
+                <h2>3D View</h2>
+                <div id=DisplayPerspective name=DisplayPerspective></div>
+            </td>
+            <td align=CENTER valign=MIDDLE>
+                <h2>Local Map</h2>
+                <div id=DisplayLocal name=DisplayLocal></div>
+            </td>
+        </tr>
+        <tr>
+            <td align=CENTER valign=MIDDLE>
+                <div><button onclick="ofNavigate.NavigateTurn(LF_MAP_MOVE_TURNLEFT);"><img src="./Maze/Maze_TurnLeft.gif" alt="Turn Left"/></button> <button onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);"><img src="./Maze/Maze_MoveForward.gif" alt="Move Forward"/></button> <button onclick="ofNavigate.NavigateTurn(LF_MAP_MOVE_TURNRIGHT);"><img src="./Maze/Maze_TurnRight.gif" alt="Turn Right"/></button></div>
+                <div><button onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_STEPLEFT);"><img src="./Maze/Maze_StepLeft.gif" alt="Step Left"/></button> <button onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);"><img src="./Maze/Maze_MoveBackward.gif" alt="Move Backward"/></button> <button onclick="ofNavigate.NavigateMove(LF_MAP_MOVE_STEPRIGHT);"><img src="./Maze/Maze_StepRight.gif" alt="Step Right"/></button></div>
+            </td>
+        </tr>
+    </table>
+    <script id=clientEventHandlersJS language=javascript>
+<!--
+
+        ofDisplay[0] = new DisplayPerspective();
+        ofDisplay[1] = new DisplayLocal();
+
+        ofNavigate = new Navigate(ofMap, ofDisplay);
+
+        ofNavigate.NavigateNewGame();
+
+//-->
+    </script>
+</body>
+</html>
