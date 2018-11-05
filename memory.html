@@ -1,196 +1,202 @@
 ﻿<!DOCTYPE html>
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
     <meta charset="utf-8" />
     <title></title>
 </head>
+
 <body>
     <div>
         <a href="index.html">Home</a>
     </div>
     <h2>Memory</h2>
 
-    Number of unique images to play with <input id=imageCount name=imageCount value=8><br>
-    Number of instances of each image to match <input id=setCount name=setCount value=2><br>
+    Number of unique images to play with
+    <input id=imageCount name=imageCount value=8>
+    <br> Number of instances of each image to match
+    <input id=setCount name=setCount value=2>
+    <br>
     <div>
         <input type=BUTTON value="New Game" onclick="ofTable.TableNewGame();" id=button1 name=button1 />
-        </div>
-        <div id=memoryBoard name=memoryBoard></div>
-        <script id=clientEventHandlersJS language=javascript>
-<!--
+    </div>
+    <div id=memoryBoard name=memoryBoard></div>
+    <script id=clientEventHandlersJS language=javascript>
+< !--
     var LF_NO_GUESS = Number(0);
-    var lfSetCount = Number(0);
-    var lfRowCount = Number(0);
-    var lfColCount = Number(0);
-    var zfImageFiles = new Array();
-    zfImageFiles[1] = './Memory/Circle_cell.jpg';
-    zfImageFiles[2] = './Memory/Cross_cell.jpg';
-    zfImageFiles[3] = './Memory/Diamond_cell.jpg';
-    zfImageFiles[4] = './Memory/Lines_cell.jpg';
-    zfImageFiles[5] = './Memory/Square_cell.jpg';
-    zfImageFiles[6] = './Memory/Star_cell.jpg';
-    zfImageFiles[7] = './Memory/Triangle_cell.jpg';
-    zfImageFiles[8] = './Memory/Waves_cell.jpg';
-    var ofTable = new Table();
+        var lfSetCount = Number(0);
+        var lfRowCount = Number(0);
+        var lfColCount = Number(0);
+        var zfImageFiles = new Array();
+        zfImageFiles[1] = './memory/Circle_cell.jpg';
+        zfImageFiles[2] = './memory/Cross_cell.jpg';
+        zfImageFiles[3] = './memory/Diamond_cell.jpg';
+        zfImageFiles[4] = './memory/Lines_cell.jpg';
+        zfImageFiles[5] = './memory/Square_cell.jpg';
+        zfImageFiles[6] = './memory/Star_cell.jpg';
+        zfImageFiles[7] = './memory/Triangle_cell.jpg';
+        zfImageFiles[8] = './memory/Waves_cell.jpg';
+        var ofTable = new Table();
 
-    function Table() {
-        this.Guess = new Array();
-        this.GuessCount = Number(0);
-        this.TableNewGame = TableNewGame;
-        this.TableClickCell = TableClickCell;
-        this.TableFinished = TableFinished;
-    }
-
-    function TableNewGame() {
-        var lpImageCount = Number(0);
-        var lpCellCount = Number(0);
-        var lpCellIndex = Number(0);
-        lpImageCount = document.getElementById('imageCount').value;
-        if (lpImageCount < 1) {
-            alert('You must have at least one image');
-            document.getElementById('imageCount').value = 1;
-            document.getElementById('imageCount').setFocus;
-            return;
-
+        function Table() {
+            this.Guess = new Array();
+            this.GuessCount = Number(0);
+            this.TableNewGame = TableNewGame;
+            this.TableClickCell = TableClickCell;
+            this.TableFinished = TableFinished;
         }
-        if ((zfImageFiles.length - 1) < lpImageCount) {
-            alert('You can have a maximum of ' + (zfImageFiles.length - 1) + ' images');
-            document.getElementById('imageCount').value = (zfImageFiles.length - 1);
-            document.getElementById('imageCount').setFocus;
-            return;
 
-        }
-        lfSetCount = document.getElementById('setCount').value;
-        if (lfSetCount < 2) {
-            alert('You must have at least one pair of images in a set');
-            document.getElementById('setCount').value = 2;
-            document.getElementById('setCount').setFocus;
-            return;
+        function TableNewGame() {
+            var lpImageCount = Number(0);
+            var lpCellCount = Number(0);
+            var lpCellIndex = Number(0);
+            lpImageCount = document.getElementById('imageCount').value;
+            if (lpImageCount < 1) {
+                alert('You must have at least one image');
+                document.getElementById('imageCount').value = 1;
+                document.getElementById('imageCount').setFocus;
+                return;
 
-        }
-        lpCellCount = lfSetCount * lpImageCount;
-        lfRowCount = Math.round(Math.sqrt(lpCellCount) + 1);
-        do {
-            lfRowCount--;
-            lfColCount = (lpCellCount / lfRowCount);
-
-        } while (lfRowCount > 0 && lfColCount != Math.round(lfColCount));
-        zpBuffer = '';
-        for (lpCellIndex = 1;
-            lpCellIndex <= (lfRowCount * lfColCount);
-            lpCellIndex++) {
-            zpBuffer = zpBuffer + '<IMG id=Cell' + lpCellIndex + ' onclick="ofTable.TableClickCell(' + lpCellIndex + ');" src="./Memory/Memory_cell.jpg" border=0 >';
-            if (lpCellIndex % lfColCount == 0) {
-                zpBuffer = zpBuffer + '<BR>';
             }
-        }
-        document.getElementById('memoryBoard').innerHTML = zpBuffer;
-        this.Grid = new Array();
-        for (lpCellIndex = 1;
-            lpCellIndex <= (lfRowCount * lfColCount);
-            lpCellIndex++) {
-            this.Grid[lpCellIndex] = new Tile(this, lpCellIndex);
-        }
-        for (lpCellIndex = 1;
-            lpCellIndex <= (lfRowCount * lfColCount);
-            lpCellIndex++) {
-            this.Grid[lpCellIndex].Image = LF_NO_GUESS;
-            this.Grid[lpCellIndex].FaceUp = true;
+            if ((zfImageFiles.length - 1) < lpImageCount) {
+                alert('You can have a maximum of ' + (zfImageFiles.length - 1) + ' images');
+                document.getElementById('imageCount').value = (zfImageFiles.length - 1);
+                document.getElementById('imageCount').setFocus;
+                return;
 
-        }
-        for (lpImage = 1;
-            lpImage <= ((lfRowCount * lfColCount) / lfSetCount);
-            lpImage++) {
-            for (lpPair = 1;
-                lpPair <= lfSetCount;
-                lpPair++) {
-                var lpItem = new Array();
-                var lpIndex = Number(0);
-                for (lpCellIndex = 1;
-                    lpCellIndex <= (lfRowCount * lfColCount);
-                    lpCellIndex++) {
-                    if (this.Grid[lpCellIndex].Image == LF_NO_GUESS) {
-                        lpIndex++;
-                        lpItem[lpIndex] = lpCellIndex;
-
-                    }
-                }
-                lpProgress = Math.round(1 + (Math.random() * (lpIndex - 1)));
-                this.Grid[lpItem[lpProgress]].Image = lpImage;
-                this.Grid[lpItem[lpProgress]].TileFaceUp(false);
             }
-        }
-        this.GuessCount = 0;
-    }
+            lfSetCount = document.getElementById('setCount').value;
+            if (lfSetCount < 2) {
+                alert('You must have at least one pair of images in a set');
+                document.getElementById('setCount').value = 2;
+                document.getElementById('setCount').setFocus;
+                return;
 
-    function TableClickCell(lpCell) {
-        if (!this.Grid[lpCell].FaceUp) {
-            this.Grid[lpCell].TileFaceUp(true);
-            if (this.Guess.length < lfSetCount) {
-                if (this.Guess.length <= 0) {
-                    this.Guess[this.Guess.length] = LF_NO_GUESS;
-                }
-                this.Guess[this.Guess.length] = lpCell;
+            }
+            lpCellCount = lfSetCount * lpImageCount;
+            lfRowCount = Math.round(Math.sqrt(lpCellCount) + 1);
+            do {
+                lfRowCount--;
+                lfColCount = (lpCellCount / lfRowCount);
 
-            } else {
-                this.GuessCount++;
-                bpGuessMatch = true;
-                for (lpGuessIndex = 1;
-                    lpGuessIndex < this.Guess.length;
-                    lpGuessIndex++) {
-                    bpGuessMatch = bpGuessMatch & this.Grid[this.Guess[lpGuessIndex]].Image == this.Grid[lpCell].Image;
+            } while (lfRowCount > 0 && lfColCount != Math.round(lfColCount));
+            zpBuffer = '';
+            for (lpCellIndex = 1;
+                lpCellIndex <= (lfRowCount * lfColCount);
+                lpCellIndex++) {
+                zpBuffer = zpBuffer + '<IMG id=Cell' + lpCellIndex + ' onclick="ofTable.TableClickCell(' + lpCellIndex + ');" src="./memory/Memory_cell.jpg" border=0 >';
+                if (lpCellIndex % lfColCount == 0) {
+                    zpBuffer = zpBuffer + '<BR>';
                 }
-                if (bpGuessMatch) {
-                    if (this.TableFinished()) {
-                        alert('Finished in ' + this.GuessCount + ' guesses');
+            }
+            document.getElementById('memoryBoard').innerHTML = zpBuffer;
+            this.Grid = new Array();
+            for (lpCellIndex = 1;
+                lpCellIndex <= (lfRowCount * lfColCount);
+                lpCellIndex++) {
+                this.Grid[lpCellIndex] = new Tile(this, lpCellIndex);
+            }
+            for (lpCellIndex = 1;
+                lpCellIndex <= (lfRowCount * lfColCount);
+                lpCellIndex++) {
+                this.Grid[lpCellIndex].Image = LF_NO_GUESS;
+                this.Grid[lpCellIndex].FaceUp = true;
+
+            }
+            for (lpImage = 1;
+                lpImage <= ((lfRowCount * lfColCount) / lfSetCount);
+                lpImage++) {
+                for (lpPair = 1;
+                    lpPair <= lfSetCount;
+                    lpPair++) {
+                    var lpItem = new Array();
+                    var lpIndex = Number(0);
+                    for (lpCellIndex = 1;
+                        lpCellIndex <= (lfRowCount * lfColCount);
+                        lpCellIndex++) {
+                        if (this.Grid[lpCellIndex].Image == LF_NO_GUESS) {
+                            lpIndex++;
+                            lpItem[lpIndex] = lpCellIndex;
+
+                        }
                     }
+                    lpProgress = Math.round(1 + (Math.random() * (lpIndex - 1)));
+                    this.Grid[lpItem[lpProgress]].Image = lpImage;
+                    this.Grid[lpItem[lpProgress]].TileFaceUp(false);
+                }
+            }
+            this.GuessCount = 0;
+        }
+
+        function TableClickCell(lpCell) {
+            if (!this.Grid[lpCell].FaceUp) {
+                this.Grid[lpCell].TileFaceUp(true);
+                if (this.Guess.length < lfSetCount) {
+                    if (this.Guess.length <= 0) {
+                        this.Guess[this.Guess.length] = LF_NO_GUESS;
+                    }
+                    this.Guess[this.Guess.length] = lpCell;
+
                 } else {
-                    alert('No match');
+                    this.GuessCount++;
+                    bpGuessMatch = true;
                     for (lpGuessIndex = 1;
                         lpGuessIndex < this.Guess.length;
                         lpGuessIndex++) {
-                        this.Grid[this.Guess[lpGuessIndex]].TileFaceUp(false);
+                        bpGuessMatch = bpGuessMatch & this.Grid[this.Guess[lpGuessIndex]].Image == this.Grid[lpCell].Image;
                     }
-                    this.Grid[lpCell].TileFaceUp(false);
+                    if (bpGuessMatch) {
+                        if (this.TableFinished()) {
+                            alert('Finished in ' + this.GuessCount + ' guesses');
+                        }
+                    } else {
+                        alert('No match');
+                        for (lpGuessIndex = 1;
+                            lpGuessIndex < this.Guess.length;
+                            lpGuessIndex++) {
+                            this.Grid[this.Guess[lpGuessIndex]].TileFaceUp(false);
+                        }
+                        this.Grid[lpCell].TileFaceUp(false);
+                    }
+                    this.Guess = new Array();
                 }
-                this.Guess = new Array();
             }
         }
-    }
 
-    function TableFinished() {
-        var lpCellIndex = Number(0);
-        var bpFinished = Boolean(true);
-        for (lpCellIndex = 1;
-            lpCellIndex <= (lfRowCount * lfColCount);
-            lpCellIndex++) {
-            bpFinished = bpFinished & this.Grid[lpCellIndex].FaceUp;
+        function TableFinished() {
+            var lpCellIndex = Number(0);
+            var bpFinished = Boolean(true);
+            for (lpCellIndex = 1;
+                lpCellIndex <= (lfRowCount * lfColCount);
+                lpCellIndex++) {
+                bpFinished = bpFinished & this.Grid[lpCellIndex].FaceUp;
+            }
+            return bpFinished;
         }
-        return bpFinished;
-    }
 
-    function Tile(opTable, lpCell) {
-        this.Table = opTable;
-        this.Image = Number(0);
-        this.FaceUp = Boolean(false);
-        this.TileFaceUp = TileFaceUp;
-        this.Object = document.getElementById('Cell' + lpCell);
-    }
-
-    function TileFaceUp(bpFaceUp) {
-        this.FaceUp = bpFaceUp;
-        if (bpFaceUp) {
-            zpImage = zfImageFiles[this.Image];
-        } else {
-            zpImage = './Memory/Memory_cell.jpg';
+        function Tile(opTable, lpCell) {
+            this.Table = opTable;
+            this.Image = Number(0);
+            this.FaceUp = Boolean(false);
+            this.TileFaceUp = TileFaceUp;
+            this.Object = document.getElementById('Cell' + lpCell);
         }
-        this.Object.src = zpImage;
-    }
 
-    ofTable.TableNewGame();
+        function TileFaceUp(bpFaceUp) {
+            this.FaceUp = bpFaceUp;
+            if (bpFaceUp) {
+                zpImage = zfImageFiles[this.Image];
+            } else {
+                zpImage = './memory/Memory_cell.jpg';
+            }
+            this.Object.src = zpImage;
+        }
+
+        ofTable.TableNewGame();
 
     //-->
-        </script>
+    </script>
 </body>
+
 </html>

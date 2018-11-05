@@ -1,10 +1,12 @@
 ﻿<!DOCTYPE html>
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
     <meta charset="utf-8" />
     <title></title>
 </head>
+
 <body>
     <div>
         <a href="index.html">Home</a>
@@ -29,9 +31,12 @@
             </tr>
         </table>
     </div>
-    <div>Hidden : <label name="DisplayWord" id="DisplayWord">_ . _ . _ . _</label></div>
+    <div>Hidden :
+        <label name="DisplayWord" id="DisplayWord">_ . _ . _ . _</label>
+    </div>
     <div>
-        Letter : <select id=TryLetter name=TryLetter>
+        Letter :
+        <select id=TryLetter name=TryLetter>
             <option value=A>A</option>
             <option value=B>B</option>
             <option value=C>C</option>
@@ -58,139 +63,145 @@
             <option value=X>X</option>
             <option value=Y>Y</option>
             <option value=Z>Z</option>
-        </select>&nbsp;<input id=GuessLetter name=GuessLetter type=button value="Guess Letter" language=javascript onclick="return GuessLetter()">
+        </select>&nbsp;
+        <input id=GuessLetter name=GuessLetter type=button value="Guess Letter" language=javascript onclick="return GuessLetter()">
     </div>
-    <div>Word : <input id=TryWord name=TryWord>&nbsp;<input id=GuessWord name=GuessWord type=button value="Guess Word" language=javascript onclick="return GuessWord()" /></div>
+    <div>Word :
+        <input id=TryWord name=TryWord>&nbsp;
+        <input id=GuessWord name=GuessWord type=button value="Guess Word" language=javascript onclick="return GuessWord()"
+        />
+    </div>
     <script language=javascript>
-<!--
+< !--
     var zfWordArray = new Array();
-    zfWordArray[0] = new String('Hang');
-    zfWordArray[1] = new String('Man');
+        zfWordArray[0] = new String('Hang');
+        zfWordArray[1] = new String('Man');
 
-    var LF_STATE_PLAYING = Number(0);
-    var LF_STATE_YOUWIN = Number(1);
-    var LF_STATE_YOULOSE = Number(2);
-    var ZF_TRIED_LETTER_DELIMIT = new String(' ');
-    var ZF_TRIED_WORD_DELIMIT = new String(' ');
-    var ZF_DISPLAY_WORD_SPACE = new String(' . ');
-    var ZF_DISPLAY_WORD_PLACE = new String('_');
-    var lfBadGuessCount = Number(0);
-    var lfBadGuessMax = Number(10);
-    var lfState = Number(LF_STATE_PLAYING);
-    var zfHiddenWord = zfWordArray[0];
+        var LF_STATE_PLAYING = Number(0);
+        var LF_STATE_YOUWIN = Number(1);
+        var LF_STATE_YOULOSE = Number(2);
+        var ZF_TRIED_LETTER_DELIMIT = new String(' ');
+        var ZF_TRIED_WORD_DELIMIT = new String(' ');
+        var ZF_DISPLAY_WORD_SPACE = new String(' . ');
+        var ZF_DISPLAY_WORD_PLACE = new String('_');
+        var lfBadGuessCount = Number(0);
+        var lfBadGuessMax = Number(10);
+        var lfState = Number(LF_STATE_PLAYING);
+        var zfHiddenWord = zfWordArray[0];
 
-    function NewGame() {
-        lfBadGuessCount = 0;
-        lfBadGuessMax = 16;
-        lfState = LF_STATE_PLAYING;
-        WordGuess.innerHTML = '';
-        LetterGuess.innerHTML = '';
-        TryLetter.selectedIndex = -1;
-        TryWord.value = '';
-        zfHiddenWord = zfWordArray[Math.round(Math.random() * zfWordArray.length - 1)];
-        HangImage.src = './HangMan/HangMan-01.JPG';
-        ShowDisplayWord();
-    }
+        function NewGame() {
+            lfBadGuessCount = 0;
+            lfBadGuessMax = 16;
+            lfState = LF_STATE_PLAYING;
+            WordGuess.innerHTML = '';
+            LetterGuess.innerHTML = '';
+            TryLetter.selectedIndex = -1;
+            TryWord.value = '';
+            zfHiddenWord = zfWordArray[Math.round(Math.random() * zfWordArray.length - 1)];
+            HangImage.src = './hangman/HangMan-01.JPG';
+            ShowDisplayWord();
+        }
 
-    function GuessLetter() {
-        switch (lfState) {
-        case LF_STATE_PLAYING:
-            if (TryLetter.value == '') {
-                alert('Please select a letter from the list');
-            } else {
-                if (LetterGuess.innerHTML.toUpperCase().indexOf(TryLetter.value.toUpperCase()) == -1) {
-                    LetterGuess.innerHTML += ZF_TRIED_LETTER_DELIMIT + TryLetter.value;
-                    ShowDisplayWord();
-                    if (lfState == LF_STATE_PLAYING) {
-                        if (zfHiddenWord.toUpperCase().indexOf(TryLetter.value.toUpperCase()) == -1) {
-                            BadGuess();
+        function GuessLetter() {
+            switch (lfState) {
+                case LF_STATE_PLAYING:
+                    if (TryLetter.value == '') {
+                        alert('Please select a letter from the list');
+                    } else {
+                        if (LetterGuess.innerHTML.toUpperCase().indexOf(TryLetter.value.toUpperCase()) == -1) {
+                            LetterGuess.innerHTML += ZF_TRIED_LETTER_DELIMIT + TryLetter.value;
+                            ShowDisplayWord();
+                            if (lfState == LF_STATE_PLAYING) {
+                                if (zfHiddenWord.toUpperCase().indexOf(TryLetter.value.toUpperCase()) == -1) {
+                                    BadGuess();
+                                }
+                            } else {
+                                alert('Finished with ' + lfBadGuessCount + ' bad guess!');
+                            }
+                        } else {
+                            alert('The letter ' + TryLetter.value + ' has already been tried');
+                        }
+                    }
+                    break;
+                case LF_STATE_YOUWIN:
+                    alert('Finished with ' + lfBadGuessCount + ' bad guess!');
+                    break;
+                case LF_STATE_YOULOSE:
+                    alert('The game is over, you have used all ' + lfBadGuessMax + ' of your lives!');
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        function GuessWord() {
+            switch (lfState) {
+                case LF_STATE_PLAYING:
+                    if (TryWord.value.length == zfHiddenWord.length) {
+                        if (WordGuess.innerHTML.toUpperCase().indexOf(TryWord.value.toUpperCase()) == -1) {
+                            WordGuess.innerHTML += ZF_TRIED_WORD_DELIMIT + TryWord.value.toUpperCase();
+                            ShowDisplayWord();
+                            if (lfState == LF_STATE_PLAYING) {
+                                if (zfHiddenWord.toUpperCase() != TryWord.value.toUpperCase()) {
+                                    BadGuess();
+                                }
+                            } else {
+                                alert('Finished with ' + lfBadGuessCount + ' bad guess!');
+                            }
+                        } else {
+                            alert('The word ' + TryWord.value + ' has already been tried');
                         }
                     } else {
-                        alert('Finished with ' + lfBadGuessCount + ' bad guess!');
+                        alert('Please enter a word with ' + zfHiddenWord.length + ' letters');
                     }
+                    break;
+                case LF_STATE_YOUWIN:
+                    alert('Finished with ' + lfBadGuessCount + ' bad guess!');
+                    break;
+                case LF_STATE_YOULOSE:
+                    alert('The game is over, you have used all ' + lfBadGuessMax + ' of your lives!');
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        function ShowDisplayWord() {
+            var zpDisplayWord = new String('');
+            lfState = LF_STATE_YOUWIN;
+            for (var lpCharacter = 0;
+                lpCharacter < zfHiddenWord.length;
+                lpCharacter++) {
+                if (lpCharacter != 0) {
+                    zpDisplayWord += ZF_DISPLAY_WORD_SPACE;
+                }
+                if (LetterGuess.innerHTML.toUpperCase().indexOf(zfHiddenWord.charAt(lpCharacter).toUpperCase()) == -1 && WordGuess.innerHTML.toUpperCase().indexOf(zfHiddenWord.toUpperCase()) == -1) {
+                    zpDisplayWord += ZF_DISPLAY_WORD_PLACE;
+                    lfState = LF_STATE_PLAYING;
+
                 } else {
-                    alert('The letter ' + TryLetter.value + ' has already been tried');
+                    zpDisplayWord += zfHiddenWord.charAt(lpCharacter).toUpperCase();
                 }
             }
-            break;
-        case LF_STATE_YOUWIN:
-            alert('Finished with ' + lfBadGuessCount + ' bad guess!');
-            break;
-        case LF_STATE_YOULOSE:
-            alert('The game is over, you have used all ' + lfBadGuessMax + ' of your lives!');
-            break;
-        default:
-            break;
+            DisplayWord.innerHTML = zpDisplayWord;
         }
-    }
 
-    function GuessWord() {
-        switch (lfState) {
-        case LF_STATE_PLAYING:
-            if (TryWord.value.length == zfHiddenWord.length) {
-                if (WordGuess.innerHTML.toUpperCase().indexOf(TryWord.value.toUpperCase()) == -1) {
-                    WordGuess.innerHTML += ZF_TRIED_WORD_DELIMIT + TryWord.value.toUpperCase();
-                    ShowDisplayWord();
-                    if (lfState == LF_STATE_PLAYING) {
-                        if (zfHiddenWord.toUpperCase() != TryWord.value.toUpperCase()) {
-                            BadGuess();
-                        }
-                    } else {
-                        alert('Finished with ' + lfBadGuessCount + ' bad guess!');
-                    }
-                } else {
-                    alert('The word ' + TryWord.value + ' has already been tried');
-                }
-            } else {
-                alert('Please enter a word with ' + zfHiddenWord.length + ' letters');
-            }
-            break;
-        case LF_STATE_YOUWIN:
-            alert('Finished with ' + lfBadGuessCount + ' bad guess!');
-            break;
-        case LF_STATE_YOULOSE:
-            alert('The game is over, you have used all ' + lfBadGuessMax + ' of your lives!');
-            break;
-        default:
-            break;
-        }
-    }
-
-    function ShowDisplayWord() {
-        var zpDisplayWord = new String('');
-        lfState = LF_STATE_YOUWIN;
-        for (var lpCharacter = 0;
-            lpCharacter < zfHiddenWord.length;
-            lpCharacter++) {
-            if (lpCharacter != 0) {
-                zpDisplayWord += ZF_DISPLAY_WORD_SPACE;
-            }
-            if (LetterGuess.innerHTML.toUpperCase().indexOf(zfHiddenWord.charAt(lpCharacter).toUpperCase()) == -1 && WordGuess.innerHTML.toUpperCase().indexOf(zfHiddenWord.toUpperCase()) == -1) {
-                zpDisplayWord += ZF_DISPLAY_WORD_PLACE;
-                lfState = LF_STATE_PLAYING;
-
-            } else {
-                zpDisplayWord += zfHiddenWord.charAt(lpCharacter).toUpperCase();
+        function BadGuess() {
+            lfBadGuessCount += 1;
+            var zpGuessCount = new String(lfBadGuessCount + 1);
+            zpGuessCount = '00' + zpGuessCount;
+            zpGuessCount = zpGuessCount.substring(zpGuessCount.length - 2, zpGuessCount.length);
+            HangImage.src = './hangman/HangMan-' + zpGuessCount + '.JPG';
+            if (lfBadGuessCount >= lfBadGuessMax) {
+                lfState = LF_STATE_YOULOSE;
+                alert('Game over, you have used up all of your ' + lfBadGuessMax + ' lives!');
             }
         }
-        DisplayWord.innerHTML = zpDisplayWord;
-    }
 
-    function BadGuess() {
-        lfBadGuessCount += 1;
-        var zpGuessCount = new String(lfBadGuessCount + 1);
-        zpGuessCount = '00' + zpGuessCount;
-        zpGuessCount = zpGuessCount.substring(zpGuessCount.length - 2, zpGuessCount.length);
-        HangImage.src = './HangMan/HangMan-' + zpGuessCount + '.JPG';
-        if (lfBadGuessCount >= lfBadGuessMax) {
-            lfState = LF_STATE_YOULOSE;
-            alert('Game over, you have used up all of your ' + lfBadGuessMax + ' lives!');
-        }
-    }
-
-    NewGame();
+        NewGame();
 
     //-->
     </script>
-    </body>
+</body>
+
 </html>
