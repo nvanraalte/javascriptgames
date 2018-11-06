@@ -12,35 +12,33 @@
         <a href="index.html">Home</a>
     </div>
     <script id=clientEventHandlersJS language=javascript>
-< !--
-
-            function onKeyPress(event) {
-                if (document.layers) {
-                    lpKey = event.which;
-                } else {
-                    lpKey = window.event.keyCode;
-                }
-                switch (lpKey) {
-                    case 56:
-                        ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);
-                        break;
-                    case 53:
-                        ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);
-                        break;
-                    case 55:
-                        ofNavigate.NavigateTurn(LF_MAP_MOVE_TURNLEFT);
-                        break;
-                    case 57:
-                        ofNavigate.NavigateTurn(LF_MAP_MOVE_TURNRIGHT);
-                        break;
-                    case 52:
-                        ofNavigate.NavigateMove(LF_MAP_MOVE_STEPLEFT);
-                        break;
-                    case 54:
-                        ofNavigate.NavigateMove(LF_MAP_MOVE_STEPRIGHT);
-                        break;
-                }
+        function onKeyPress(event) {
+            if (document.layers) {
+                lpKey = event.which;
+            } else {
+                lpKey = window.event.keyCode;
             }
+            switch (lpKey) {
+                case 56:
+                    ofNavigate.NavigateMove(LF_MAP_MOVE_FORWARD);
+                    break;
+                case 53:
+                    ofNavigate.NavigateMove(LF_MAP_MOVE_BACKWARD);
+                    break;
+                case 55:
+                    ofNavigate.NavigateTurn(LF_MAP_MOVE_TURNLEFT);
+                    break;
+                case 57:
+                    ofNavigate.NavigateTurn(LF_MAP_MOVE_TURNRIGHT);
+                    break;
+                case 52:
+                    ofNavigate.NavigateMove(LF_MAP_MOVE_STEPLEFT);
+                    break;
+                case 54:
+                    ofNavigate.NavigateMove(LF_MAP_MOVE_STEPRIGHT);
+                    break;
+            }
+        }
 
         var LF_MAP_ROW_COUNT = Number(2);
         var LF_MAP_COL_COUNT = Number(2);
@@ -657,8 +655,6 @@
         var ofMap = new Map();
         var ofDisplay = new Array();
         var ofNavigate;
-
-//-->
     </script>
 
 
@@ -707,16 +703,12 @@
         </tr>
     </table>
     <script id=clientEventHandlersJS language=javascript>
-< !--
-
-            ofDisplay[0] = new DisplayPerspective();
+        ofDisplay[0] = new DisplayPerspective();
         ofDisplay[1] = new DisplayLocal();
 
         ofNavigate = new Navigate(ofMap, ofDisplay);
 
         ofNavigate.NavigateNewGame();
-
-//-->
     </script>
 </body>
 

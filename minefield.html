@@ -1,285 +1,303 @@
 ﻿<!DOCTYPE html>
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
     <meta charset="utf-8" />
     <title></title>
 </head>
+
 <body>
-<style>
-    .field-cell {
-        width: 20px;
-        height: 20px;
-        background-color:#c0c0c0;
-        text-align: center;
-        vertical-align: middle;
-    }
-    .field-covered {
-        border-left: #ffffff solid;
-        border-top: #ffffff solid;
-        border-right: #0e0e0e solid;
-        border-bottom: #0e0e0e solid;
-    }
-    .field-opened {
-        border-left: #0e0e0e solid;
-        border-top: #0e0e0e solid;
-        border-right: #ffffff solid;
-        border-bottom: #ffffff solid;
-    }
-    .field-mine{
-        background-color:#FF0000;
-    }
-    .field-8 {
-        color: #FF6600;
-    }
-    .field-7{
-        color: #FFA500;
-    }
-    .field-6{
-        color: #FF4BE4;
-    }
-    .field-5{
-        color: #6C134A;
-    }
-    .field-4{
-        color: #2154FF;
-    }
-    .field-3{
-        color: #0000FF;
-    }
-    .field-2{
-        color: #182462;
-    }
-    .field-1{
-        color: #182A04
-    }
-</style>
-<div>
-    <a href="index.html">Home</a>
-</div>
-<h2>Mine Field</h2>
-<div>Field Width : <input id="FieldWidth" name="FieldWidth" type="text" value="16"/></div>
-    <div>Field Height : <input id="FieldHeight" name="FieldHeight" type="text" value="16"/></div>
-<div>Number of Mines : <input id="MineCount" name="MineCount" type="text" value="40"/>
-</div>
-    <div><input type=button value="New Game" onclick="NewGame();" /></div>
+    <style>
+        .field-cell {
+            width: 20px;
+            height: 20px;
+            background-color: #c0c0c0;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .field-covered {
+            border-left: #ffffff solid;
+            border-top: #ffffff solid;
+            border-right: #0e0e0e solid;
+            border-bottom: #0e0e0e solid;
+        }
+
+        .field-opened {
+            border-left: #0e0e0e solid;
+            border-top: #0e0e0e solid;
+            border-right: #ffffff solid;
+            border-bottom: #ffffff solid;
+        }
+
+        .field-mine {
+            background-color: #FF0000;
+        }
+
+        .field-8 {
+            color: #FF6600;
+        }
+
+        .field-7 {
+            color: #FFA500;
+        }
+
+        .field-6 {
+            color: #FF4BE4;
+        }
+
+        .field-5 {
+            color: #6C134A;
+        }
+
+        .field-4 {
+            color: #2154FF;
+        }
+
+        .field-3 {
+            color: #0000FF;
+        }
+
+        .field-2 {
+            color: #182462;
+        }
+
+        .field-1 {
+            color: #182A04
+        }
+    </style>
+    <div>
+        <a href="index.html">Home</a>
+    </div>
+    <h2>Mine Field</h2>
+    <div>Field Width :
+        <input id="FieldWidth" name="FieldWidth" type="text" value="16" />
+    </div>
+    <div>Field Height :
+        <input id="FieldHeight" name="FieldHeight" type="text" value="16" />
+    </div>
+    <div>Number of Mines :
+        <input id="MineCount" name="MineCount" type="text" value="40" />
+    </div>
+    <div>
+        <input type=button value="New Game" onclick="NewGame();" />
+    </div>
     <div id="MineField" name="MineField"></div>
 
-<script language=javascript>
-<!--
+    <script language=javascript>
+        var LP_INDEX_NONE = -1;
 
-    var LP_INDEX_NONE = -1;
-    
-    var LP_STATE_PLAYING = 0;
-    var LP_STATE_LOOSE = 1;
-    var LP_STATE_WIN = 2;
+        var LP_STATE_PLAYING = 0;
+        var LP_STATE_LOOSE = 1;
+        var LP_STATE_WIN = 2;
 
-    var lpGameState = LP_STATE_PLAYING;
+        var lpGameState = LP_STATE_PLAYING;
 
-    var zfCellArray = new Array();
+        var zfCellArray = new Array();
 
-    var lfClickArray = new Array();
-    var lfClickProcessIndex = 0;
+        var lfClickArray = new Array();
+        var lfClickProcessIndex = 0;
 
-    function Cell(lpCellIndex) {
-        this.CellIndex = lpCellIndex;
+        function Cell(lpCellIndex) {
+            this.CellIndex = lpCellIndex;
 
-        this.AdjacentCellIndexArray = new Array();
-        this.AdjacentCellIndexArrayAdd = AdjacentCellIndexArrayAdd;
-        this.AdjacentMineCount = AdjacentMineCount;
-        
-        this.HasMine = false;
-        this.Clicked = false;
-    }
+            this.AdjacentCellIndexArray = new Array();
+            this.AdjacentCellIndexArrayAdd = AdjacentCellIndexArrayAdd;
+            this.AdjacentMineCount = AdjacentMineCount;
 
-    function AdjacentCellIndexArrayAdd(lpAdjacentCellIndex) {
-        if (lpAdjacentCellIndex != LP_INDEX_NONE) {
-            this.AdjacentCellIndexArray[this.AdjacentCellIndexArray.length] = lpAdjacentCellIndex;
+            this.HasMine = false;
+            this.Clicked = false;
         }
-    }
 
-    function AdjacentMineCount() {
-        var lpAdjacentCount = 0;
-
-        for (lpAdjacentIndex = 0; lpAdjacentIndex < this.AdjacentCellIndexArray.length; lpAdjacentIndex++) {
-            if (zfCellArray[this.AdjacentCellIndexArray[lpAdjacentIndex]].HasMine) {
-                lpAdjacentCount++;
+        function AdjacentCellIndexArrayAdd(lpAdjacentCellIndex) {
+            if (lpAdjacentCellIndex != LP_INDEX_NONE) {
+                this.AdjacentCellIndexArray[this.AdjacentCellIndexArray.length] = lpAdjacentCellIndex;
             }
         }
 
-        return lpAdjacentCount;
-    }
+        function AdjacentMineCount() {
+            var lpAdjacentCount = 0;
 
-    function GameWidth() {
-        return new Number(FieldWidth.value);
-    }
+            for (lpAdjacentIndex = 0; lpAdjacentIndex < this.AdjacentCellIndexArray.length; lpAdjacentIndex++) {
+                if (zfCellArray[this.AdjacentCellIndexArray[lpAdjacentIndex]].HasMine) {
+                    lpAdjacentCount++;
+                }
+            }
 
-    function GameHeight() {
-        return new Number(FieldHeight.value);
-    }
+            return lpAdjacentCount;
+        }
 
-    function GameMineCount() {
-        return new Number(MineCount.value);
-    }
+        function GameWidth() {
+            return new Number(FieldWidth.value);
+        }
 
-    function NewGame() {
-        var lpCellCount = GameWidth() * GameHeight();
+        function GameHeight() {
+            return new Number(FieldHeight.value);
+        }
 
-        if (GameMineCount() > lpCellCount) {
-            alert('There are too many mines for the field. Either increase the field size or choose fewer than ' + lpCellCount + ' mines.');
-        } else {
-            lpGameState = LP_STATE_PLAYING;
+        function GameMineCount() {
+            return new Number(MineCount.value);
+        }
 
-            zfCellArray = new Array();
+        function NewGame() {
+            var lpCellCount = GameWidth() * GameHeight();
 
-            NewArray();
-            PlantMines();
+            if (GameMineCount() > lpCellCount) {
+                alert('There are too many mines for the field. Either increase the field size or choose fewer than ' + lpCellCount + ' mines.');
+            } else {
+                lpGameState = LP_STATE_PLAYING;
 
+                zfCellArray = new Array();
+
+                NewArray();
+                PlantMines();
+
+                var lpCellIndex = 0;
+
+                var zfHTML = '<table>';
+                for (lpRowIndex = 0; lpRowIndex < GameHeight(); lpRowIndex++) {
+                    zfHTML = zfHTML + '<tr>';
+                    for (lpColumnIndex = 0; lpColumnIndex < GameWidth(); lpColumnIndex++) {
+                        zfHTML = zfHTML + '<td id="Cell' + lpCellIndex + '" name="Cell' + lpCellIndex + '" class="field-cell field-covered" onclick="CellClicked(' + lpCellIndex + ')"></td>';
+                        lpCellIndex++;
+                    }
+                    zfHTML = zfHTML + '</tr>';
+                }
+                zfHTML = zfHTML + '</table>';
+                MineField.innerHTML = zfHTML;
+            }
+        }
+
+        function NewArray() {
+            for (lpCellIndex = 0; lpCellIndex < GameHeight() * GameWidth(); lpCellIndex++) {
+                zfCellArray[lpCellIndex] = CreateCell(lpCellIndex);
+            }
+        }
+
+        function PlantMines() {
             var lpCellIndex = 0;
 
-            var zfHTML = '<table>';
-            for (lpRowIndex = 0; lpRowIndex < GameHeight(); lpRowIndex++) {
-                zfHTML = zfHTML + '<tr>';
-                for (lpColumnIndex = 0; lpColumnIndex < GameWidth(); lpColumnIndex++) {                
-                    zfHTML = zfHTML + '<td id="Cell' + lpCellIndex + '" name="Cell' + lpCellIndex + '" class="field-cell field-covered" onclick="CellClicked(' + lpCellIndex + ')"></td>';
-                    lpCellIndex++;
-                }
-                zfHTML = zfHTML + '</tr>';
-            }
-            zfHTML = zfHTML + '</table>';
-            MineField.innerHTML = zfHTML;
-        }
-    }
+            for (lpMineIndex = 0; lpMineIndex < GameMineCount(); lpMineIndex++) {
+                var lpSkipCount = Math.round(1 + (Math.random() * zfCellArray.length));
 
-    function NewArray() {
-        for (lpCellIndex = 0; lpCellIndex < GameHeight() * GameWidth(); lpCellIndex ++) {
-            zfCellArray[lpCellIndex] = CreateCell(lpCellIndex);
-        }
-    }
-
-    function PlantMines() {
-        var lpCellIndex = 0;
-
-        for (lpMineIndex = 0; lpMineIndex < GameMineCount() ; lpMineIndex++) {
-            var lpSkipCount = Math.round(1 + (Math.random() * zfCellArray.length));
-
-            for (lpSkipIndex = 0; lpSkipIndex < lpSkipCount; lpSkipIndex++) {
-                lpCellIndex = IncrementCellIndex(lpCellIndex);
-                while (zfCellArray[lpCellIndex].HasMine == true) {
+                for (lpSkipIndex = 0; lpSkipIndex < lpSkipCount; lpSkipIndex++) {
                     lpCellIndex = IncrementCellIndex(lpCellIndex);
+                    while (zfCellArray[lpCellIndex].HasMine == true) {
+                        lpCellIndex = IncrementCellIndex(lpCellIndex);
+                    }
                 }
+
+                zfCellArray[lpCellIndex].HasMine = true;
             }
-
-            zfCellArray[lpCellIndex].HasMine = true;
         }
-    }
 
-    function IncrementCellIndex(lpCellIndex) {
-        lpCellIndex++;
-        if (lpCellIndex == GameHeight() * GameWidth()) {
-            lpCellIndex = 0;
-        }
-        return lpCellIndex;
-    }
-    
-    function CellClicked(lpCellIndex) {
-        if (lpGameState == LP_STATE_PLAYING) {
-            if (zfCellArray[lpCellIndex].HasMine) {
-                ClickCell(lpCellIndex);
-                alert('You loose');
-                lpGameState = LP_STATE_LOOSE;
+        function IncrementCellIndex(lpCellIndex) {
+            lpCellIndex++;
+            if (lpCellIndex == GameHeight() * GameWidth()) {
+                lpCellIndex = 0;
             }
-            else {
-                lfClickArray = new Array();
-                lfClickProcessIndex = 0;
+            return lpCellIndex;
+        }
 
-                zfCellArray[lpCellIndex].Clicked = true;
-                lfClickArray[lfClickArray.length] = lpCellIndex;
+        function CellClicked(lpCellIndex) {
+            if (lpGameState == LP_STATE_PLAYING) {
+                if (zfCellArray[lpCellIndex].HasMine) {
+                    ClickCell(lpCellIndex);
+                    alert('You loose');
+                    lpGameState = LP_STATE_LOOSE;
+                }
+                else {
+                    lfClickArray = new Array();
+                    lfClickProcessIndex = 0;
 
-                while (lfClickProcessIndex < lfClickArray.length) {
-                    var lpThisCellIndex = lfClickArray[lfClickProcessIndex];
-                    if (zfCellArray[lpThisCellIndex].AdjacentMineCount() == 0) {
-                        for (lpAdjacentIndex = 0; lpAdjacentIndex < zfCellArray[lpThisCellIndex].AdjacentCellIndexArray.length; lpAdjacentIndex++) {
-                            var lpNextCellIndex = zfCellArray[lpThisCellIndex].AdjacentCellIndexArray[lpAdjacentIndex];
+                    zfCellArray[lpCellIndex].Clicked = true;
+                    lfClickArray[lfClickArray.length] = lpCellIndex;
 
-                            if (!zfCellArray[lpNextCellIndex].Clicked) {
-                                zfCellArray[lpNextCellIndex].Clicked = true;
-                                lfClickArray[lfClickArray.length] = lpNextCellIndex;
+                    while (lfClickProcessIndex < lfClickArray.length) {
+                        var lpThisCellIndex = lfClickArray[lfClickProcessIndex];
+                        if (zfCellArray[lpThisCellIndex].AdjacentMineCount() == 0) {
+                            for (lpAdjacentIndex = 0; lpAdjacentIndex < zfCellArray[lpThisCellIndex].AdjacentCellIndexArray.length; lpAdjacentIndex++) {
+                                var lpNextCellIndex = zfCellArray[lpThisCellIndex].AdjacentCellIndexArray[lpAdjacentIndex];
+
+                                if (!zfCellArray[lpNextCellIndex].Clicked) {
+                                    zfCellArray[lpNextCellIndex].Clicked = true;
+                                    lfClickArray[lfClickArray.length] = lpNextCellIndex;
+                                }
                             }
                         }
+                        lfClickProcessIndex++;
                     }
-                    lfClickProcessIndex++;
-                }
 
-                for (lpClickIndex = 0; lpClickIndex < lfClickArray.length; lpClickIndex++) {
-                    ClickCell(lfClickArray[lpClickIndex]);
-                }
-
-                var finished = true;
-                for (lpCheckIndex = 0; lpCheckIndex < zfCellArray.length; lpCheckIndex++) {
-                    if (!zfCellArray[lpCheckIndex].HasMine && !zfCellArray[lpCheckIndex].Clicked) {
-                        finished = false;
+                    for (lpClickIndex = 0; lpClickIndex < lfClickArray.length; lpClickIndex++) {
+                        ClickCell(lfClickArray[lpClickIndex]);
                     }
-                }
 
-                if (finished) {
-                    alert('You win');
-                    lpGameState = LP_STATE_WIN;
+                    var finished = true;
+                    for (lpCheckIndex = 0; lpCheckIndex < zfCellArray.length; lpCheckIndex++) {
+                        if (!zfCellArray[lpCheckIndex].HasMine && !zfCellArray[lpCheckIndex].Clicked) {
+                            finished = false;
+                        }
+                    }
+
+                    if (finished) {
+                        alert('You win');
+                        lpGameState = LP_STATE_WIN;
+                    }
                 }
             }
         }
-    }
 
-    function ClickCell(lpCellIndex) {
-        var cell = document.getElementById('Cell' + lpCellIndex);
+        function ClickCell(lpCellIndex) {
+            var cell = document.getElementById('Cell' + lpCellIndex);
 
-        cell.classList.remove('field-covered');
-        cell.classList.add('field-opened');
+            cell.classList.remove('field-covered');
+            cell.classList.add('field-opened');
 
-        if (zfCellArray[lpCellIndex].HasMine) {
-            cell.classList.add('field-mine');
-            cell.innerHTML = '@';
-        }
-        else {
-            if (zfCellArray[lpCellIndex].AdjacentMineCount() != 0) {
-                cell.classList.add('field-' + zfCellArray[lpCellIndex].AdjacentMineCount());
-                cell.innerHTML = zfCellArray[lpCellIndex].AdjacentMineCount();
+            if (zfCellArray[lpCellIndex].HasMine) {
+                cell.classList.add('field-mine');
+                cell.innerHTML = '@';
+            }
+            else {
+                if (zfCellArray[lpCellIndex].AdjacentMineCount() != 0) {
+                    cell.classList.add('field-' + zfCellArray[lpCellIndex].AdjacentMineCount());
+                    cell.innerHTML = zfCellArray[lpCellIndex].AdjacentMineCount();
+                }
             }
         }
-    }
 
-    function CreateCell(lpCellIndex) {
-        var opCell = new Cell(lpCellIndex);
+        function CreateCell(lpCellIndex) {
+            var opCell = new Cell(lpCellIndex);
 
-        var lpTopLeftIndex = lpCellIndex - GameWidth() - 1;
-        var lpTopMiddleIndex = lpCellIndex - GameWidth();
-        var lpTopRightIndex = lpCellIndex - GameWidth() + 1;
-        var lpMiddleLeftIndex = lpCellIndex - 1;
-        var lpMiddleRightIndex =lpCellIndex+ 1;
-        var lpBottomLeftIndex = lpCellIndex + GameWidth() - 1;
-        var lpBottomMiddleIndex = lpCellIndex + GameWidth();
-        var lpBottomRightIndex = lpCellIndex + GameWidth() + 1;
+            var lpTopLeftIndex = lpCellIndex - GameWidth() - 1;
+            var lpTopMiddleIndex = lpCellIndex - GameWidth();
+            var lpTopRightIndex = lpCellIndex - GameWidth() + 1;
+            var lpMiddleLeftIndex = lpCellIndex - 1;
+            var lpMiddleRightIndex = lpCellIndex + 1;
+            var lpBottomLeftIndex = lpCellIndex + GameWidth() - 1;
+            var lpBottomMiddleIndex = lpCellIndex + GameWidth();
+            var lpBottomRightIndex = lpCellIndex + GameWidth() + 1;
 
-        if (lpCellIndex % GameWidth() == 0) {
-            lpTopLeftIndex = LP_INDEX_NONE;
-            lpMiddleLeftIndex = LP_INDEX_NONE;
-            lpBottomLeftIndex = LP_INDEX_NONE;
-        }
-        if ((lpCellIndex + 1) % GameWidth() == 0) {
-            lpTopRightIndex = LP_INDEX_NONE;
-            lpMiddleRightIndex = LP_INDEX_NONE;
-            lpBottomRightIndex = LP_INDEX_NONE;
-        }
-        if (lpCellIndex < GameWidth()) {
-            lpTopLeftIndex = LP_INDEX_NONE;
-            lpTopMiddleIndex = LP_INDEX_NONE;
-            lpTopRightIndex = LP_INDEX_NONE;
-        }
-        if (lpCellIndex >= GameWidth() * (GameHeight() - 1)) {
-            lpBottomLeftIndex = LP_INDEX_NONE;
-            lpBottomMiddleIndex = LP_INDEX_NONE;
-            lpBottomRightIndex = LP_INDEX_NONE;
-        }
+            if (lpCellIndex % GameWidth() == 0) {
+                lpTopLeftIndex = LP_INDEX_NONE;
+                lpMiddleLeftIndex = LP_INDEX_NONE;
+                lpBottomLeftIndex = LP_INDEX_NONE;
+            }
+            if ((lpCellIndex + 1) % GameWidth() == 0) {
+                lpTopRightIndex = LP_INDEX_NONE;
+                lpMiddleRightIndex = LP_INDEX_NONE;
+                lpBottomRightIndex = LP_INDEX_NONE;
+            }
+            if (lpCellIndex < GameWidth()) {
+                lpTopLeftIndex = LP_INDEX_NONE;
+                lpTopMiddleIndex = LP_INDEX_NONE;
+                lpTopRightIndex = LP_INDEX_NONE;
+            }
+            if (lpCellIndex >= GameWidth() * (GameHeight() - 1)) {
+                lpBottomLeftIndex = LP_INDEX_NONE;
+                lpBottomMiddleIndex = LP_INDEX_NONE;
+                lpBottomRightIndex = LP_INDEX_NONE;
+            }
 
             opCell.AdjacentCellIndexArrayAdd(lpTopLeftIndex);
             opCell.AdjacentCellIndexArrayAdd(lpTopMiddleIndex);
@@ -289,12 +307,10 @@
             opCell.AdjacentCellIndexArrayAdd(lpBottomLeftIndex);
             opCell.AdjacentCellIndexArrayAdd(lpBottomMiddleIndex);
             opCell.AdjacentCellIndexArrayAdd(lpBottomRightIndex);
-        
-        return opCell;
-    }
 
-    //-->
-    
-</script>
+            return opCell;
+        }
+    </script>
 </body>
+
 </html>

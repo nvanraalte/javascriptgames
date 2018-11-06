@@ -68,12 +68,10 @@
     </div>
     <div>Word :
         <input id=TryWord name=TryWord>&nbsp;
-        <input id=GuessWord name=GuessWord type=button value="Guess Word" language=javascript onclick="return GuessWord()"
-        />
+        <input id=GuessWord name=GuessWord type=button value="Guess Word" language=javascript onclick="return GuessWord()" />
     </div>
     <script language=javascript>
-< !--
-    var zfWordArray = new Array();
+        var zfWordArray = new Array();
         zfWordArray[0] = new String('Hang');
         zfWordArray[1] = new String('Man');
 
@@ -98,7 +96,7 @@
             TryLetter.selectedIndex = -1;
             TryWord.value = '';
             zfHiddenWord = zfWordArray[Math.round(Math.random() * zfWordArray.length - 1)];
-            HangImage.src = './hangman/HangMan-01.JPG';
+            HangImage.src = './hangman/HangMan-01.jpg';
             ShowDisplayWord();
         }
 
@@ -191,7 +189,7 @@
             var zpGuessCount = new String(lfBadGuessCount + 1);
             zpGuessCount = '00' + zpGuessCount;
             zpGuessCount = zpGuessCount.substring(zpGuessCount.length - 2, zpGuessCount.length);
-            HangImage.src = './hangman/HangMan-' + zpGuessCount + '.JPG';
+            HangImage.src = './hangman/HangMan-' + zpGuessCount + '.jpg';
             if (lfBadGuessCount >= lfBadGuessMax) {
                 lfState = LF_STATE_YOULOSE;
                 alert('Game over, you have used up all of your ' + lfBadGuessMax + ' lives!');
@@ -199,8 +197,6 @@
         }
 
         NewGame();
-
-    //-->
     </script>
 </body>
 
