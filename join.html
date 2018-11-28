@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Join</title>
+</head>
+
+<body>
+    <style>
+        .gitbash {
+            background-color: black;
+            padding: 3px;
+        }
+
+        .gitcommand {
+            color: white;
+
+        }
+
+        .gitbranch {
+            color: turquoise;
+        }
+    </style>
+    <div>
+        <a href="index.html">Home</a>
+    </div>
+    <h1>Instructions to hack this code on a Windows PC:</h1>
+    The source code is held on GitHub, which has a feature whereby simple html and javascript pages can be automatically published
+    on a GitHub url. Free versions of both these features are used to host this simple JavaScript powered site. The site
+    and its games can be run from the following URL
+    <a href="https://nvanraalte.github.io/javascriptgames">https://nvanraalte.github.io/javascriptgames</a>.
+    <ol>
+        <li>You will need to install GitBash. This is a command line program that runs on Windows and will let you get and update
+            the source code.
+            <ul>
+                <li>Download GitBash from
+                    <a href="https://gitforwindows.org">https://gitforwindows.org</a>.</li>
+                <li>Run the download file to install GitBash. The default settings will be fine, but if you spot the one to enable
+                    symlinks, it will be useful to check this one.</li>
+            </ul>
+        </li>
+        <li>Next you will need to decide where you want to put the source code files on your local Windows PC to hack them.
+            <ul>
+                <li>In your Windows explorer, choose a directory where you want the files to go - you may want to create a new
+                    folder to put them in.</li>
+                <li>Right click your chosen folder and, having installed GitBash, you should see an option 'Git Bash here' -
+                    select this to launch the GitBash command line tool.</li>
+                <li>Type (or cut and paste) the following and click enter:
+                    <br>
+                    <span class="gitbash gitcommand">git checkout https://github.com/nvanraalte/javascriptgames</span>
+                </li>
+                <li>Once that is done use the following GitBash command to go into the new 'javascriptgames' directory:
+                    <br>
+                    <span class="gitbash gitcommand">cd javascriptgames</span>
+                </li>
+                <li>GitBash now probably shows the directory name with a '
+                    <span class="gitbash gitbranch">(master)</span>' at the end. Type the following command to change to the area (the name in the brackets)
+                    to the one you can use to upload your improvements to:
+                    <br>
+                    <span class="gitbash gitcommand">git checkout develop</span>
+                </li>
+                <li>In GitBash the directory should now have a '
+                    <span class="gitbash gitbranch">(develop)</span>' at the end.</li>
+            </ul>
+        </li>
+        <li>To update the code you may need a GitHub account. The GitHub website is
+            <a href="https://github.com">https://github.com</a>.</li>
+    </ol>
+
+</body>
+
+</html>

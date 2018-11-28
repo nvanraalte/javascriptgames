@@ -1,5 +1,4 @@
 ﻿<!DOCTYPE html>
-
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
@@ -38,6 +37,10 @@
         zfImageFiles[8] = './memory/Waves_cell.jpg';
         var ofTable = new Table();
 
+        var bfChecking = Boolean(false);
+        var lfCurrentIndex;
+        var ofCurrentCell;
+
         function Table() {
             this.Guess = new Array();
             this.GuessCount = Number(0);
@@ -56,14 +59,12 @@
                 document.getElementById('imageCount').value = 1;
                 document.getElementById('imageCount').setFocus;
                 return;
-
             }
             if ((zfImageFiles.length - 1) < lpImageCount) {
                 alert('You can have a maximum of ' + (zfImageFiles.length - 1) + ' images');
                 document.getElementById('imageCount').value = (zfImageFiles.length - 1);
                 document.getElementById('imageCount').setFocus;
                 return;
-
             }
             lfSetCount = document.getElementById('setCount').value;
             if (lfSetCount < 2) {
@@ -71,14 +72,12 @@
                 document.getElementById('setCount').value = 2;
                 document.getElementById('setCount').setFocus;
                 return;
-
             }
             lpCellCount = lfSetCount * lpImageCount;
             lfRowCount = Math.round(Math.sqrt(lpCellCount) + 1);
             do {
                 lfRowCount--;
                 lfColCount = (lpCellCount / lfRowCount);
-
             } while (lfRowCount > 0 && lfColCount != Math.round(lfColCount));
             zpBuffer = '';
             for (lpCellIndex = 1;
@@ -101,7 +100,6 @@
                 lpCellIndex++) {
                 this.Grid[lpCellIndex].Image = LF_NO_GUESS;
                 this.Grid[lpCellIndex].FaceUp = true;
-
             }
             for (lpImage = 1;
                 lpImage <= ((lfRowCount * lfColCount) / lfSetCount);
@@ -117,7 +115,6 @@
                         if (this.Grid[lpCellIndex].Image == LF_NO_GUESS) {
                             lpIndex++;
                             lpItem[lpIndex] = lpCellIndex;
-
                         }
                     }
                     lpProgress = Math.round(1 + (Math.random() * (lpIndex - 1)));
@@ -129,38 +126,47 @@
         }
 
         function TableClickCell(lpCell) {
-            if (!this.Grid[lpCell].FaceUp) {
-                this.Grid[lpCell].TileFaceUp(true);
-                if (this.Guess.length < lfSetCount) {
-                    if (this.Guess.length <= 0) {
-                        this.Guess[this.Guess.length] = LF_NO_GUESS;
-                    }
-                    this.Guess[this.Guess.length] = lpCell;
-
-                } else {
-                    this.GuessCount++;
-                    bpGuessMatch = true;
-                    for (lpGuessIndex = 1;
-                        lpGuessIndex < this.Guess.length;
-                        lpGuessIndex++) {
-                        bpGuessMatch = bpGuessMatch & this.Grid[this.Guess[lpGuessIndex]].Image == this.Grid[lpCell].Image;
-                    }
-                    if (bpGuessMatch) {
-                        if (this.TableFinished()) {
-                            alert('Finished in ' + this.GuessCount + ' guesses');
+            if (!bfChecking) {
+                if (!this.Grid[lpCell].FaceUp) {
+                    this.Grid[lpCell].TileFaceUp(true);
+                    if (this.Guess.length < lfSetCount) {
+                        if (this.Guess.length <= 0) {
+                            this.Guess[this.Guess.length] = LF_NO_GUESS;
                         }
+                        this.Guess[this.Guess.length] = lpCell;
                     } else {
-                        alert('No match');
-                        for (lpGuessIndex = 1;
-                            lpGuessIndex < this.Guess.length;
-                            lpGuessIndex++) {
-                            this.Grid[this.Guess[lpGuessIndex]].TileFaceUp(false);
-                        }
-                        this.Grid[lpCell].TileFaceUp(false);
+                        bfChecking = Boolean(true);
+                        lfCurrentIndex = lpCell;
+                        ofCurrentCell = this;
+                        setTimeout(CheckGuess, 500);
                     }
-                    this.Guess = new Array();
                 }
             }
+        }
+
+        function CheckGuess() {
+            ofCurrentCell.GuessCount++;
+            bpGuessMatch = true;
+            for (lpGuessIndex = 1;
+                lpGuessIndex < ofCurrentCell.Guess.length;
+                lpGuessIndex++) {
+                bpGuessMatch = bpGuessMatch & ofCurrentCell.Grid[ofCurrentCell.Guess[lpGuessIndex]].Image == ofCurrentCell.Grid[lfCurrentIndex].Image;
+            }
+            if (bpGuessMatch) {
+                if (ofCurrentCell.TableFinished()) {
+                    alert('Finished in ' + ofCurrentCell.GuessCount + ' guesses');
+                }
+            } else {
+                alert('No match');
+                for (lpGuessIndex = 1;
+                    lpGuessIndex < ofCurrentCell.Guess.length;
+                    lpGuessIndex++) {
+                    ofCurrentCell.Grid[ofCurrentCell.Guess[lpGuessIndex]].TileFaceUp(false);
+                }
+                ofCurrentCell.Grid[lfCurrentIndex].TileFaceUp(false);
+            }
+            ofCurrentCell.Guess = new Array();
+            bfChecking = Boolean(false);
         }
 
         function TableFinished() {
