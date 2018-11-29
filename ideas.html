@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Ideas</title>
+</head>
+
+<body>
+    <div>
+        <a href="index.html">Home</a>
+    </div>
+    <h1>Possible things to try and do with the code</h1>
+    Some suggestions will be simple and straight forward, while others are quite advanced projects. The following have been sorted
+    by topic - this grouping does not reflect how easy or hard each will be to achieve...
+    <ul>
+        <li>
+            Enhancements to existing games:
+            <div>
+                There is an issue in Chrome where the 'alert' box can be displayed ahead of and block the rendering of 'document' changes
+                done prior to invoking the 'alert'. This is a known issue
+                <a href="https://stackoverflow.com/questions/52953826/chrome-javascript-execution-sequence-problem-with-alert"
+                    target="_blank">https://stackoverflow.com/questions/52953826/chrome-javascript-execution-sequence-problem-with-alert</a>.
+                Some of the games here still suffer from this, so could change the code to use 'setTimeout' to delay the
+                'alert' sufficiently to allow the rendering of 'document' changes. Using a reasonable time duration should
+                not adversely affect the user experience.
+            </div>
+            <ul>
+                <li>
+                    <a href="maze.html">Maze</a>
+                </li>
+                <ol>
+                    <li>
+                        Make it timmed
+                    </li>
+                    <li>
+                        Have a complexity setting
+                    </li>
+                    <li>
+                        Have a local map size setting
+                    </li>
+                    <li>
+                        Have objects in the maze - could do this using Windings font of different sizes so the same character displays at different
+                        sizes depending on your distance from it
+                    </li>
+                    <li>
+                        Ability to indicate which paths you have already searched - could do this either with breadcrumbs or by writing on the walls
+                    </li>
+                    <li>
+                        Have ability to modify the maze by breaking through or building walls
+                    </li>
+                    <li>
+                        Be chased through the maze
+                    </li>
+                </ol>
+                <li>
+                    <a href="tiles.html">Tiles</a>
+                </li>
+                <ol>
+                    <li>
+                        Use CSS sprite image to programmatically make tiles from a single complete image
+                    </li>
+                    <li>
+                        Ability to load your own picture for the tiles (would need the CSS sprite change to be done first)
+                    </li>
+                    <li>
+                        Ability to define the number of rows and columns (would need the CSS sprite change to be done first)
+                    </li>
+                    <li>
+                        If you randomly position the tiles rather than randomly do moves, will you always be able to solve the puzzle? If not, can
+                        you find a better algorithm for creating a random configuration to solve than performing moves?
+                    </li>
+                </ol>
+                <li>
+                    <a href="hangman.html">Hang Man</a>
+                </li>
+                <ol>
+                    <li>
+                        Add more words
+                    </li>
+                    <li>
+                        Try and connect to an online random word generator
+                    </li>
+                    <li>
+                        Inplement difficulty settings (how do you determine how difficult a word is - consider number of different letters - consider
+                        how frequently the word is used)
+                    </li>
+                </ol>
+                <li>
+                    <a href="minefield.html">Minefield</a>
+                </li>
+                <ol>
+                    <li>
+                        Implement right click to 'flag' a mine which would prevent you accidently clicking on that square
+                    </li>
+                    <li>
+                        Find objects in the mine field - could you find power ups of extra lifes or a single use mine detector
+                    </li>
+                </ol>
+            </ul>
+        </li>
+        <li>
+            Additional new games:
+            <ol>
+                <li>
+                    CSS may provide ways to rotate images so may be able to write a jigsaw game - can rotate pieces in multiples of 90 degrees,
+                    and move pieces. Need to design how to attach and detach pieces.
+
+                </li>
+            </ol>
+        </li>
+        <li>
+            Include games which require player logic:
+            <ol>
+                <li>
+                    Dr Nim
+                </li>
+                <li>
+                    Tic-Tac-Toe (noughts and crosses)
+                </li>
+                <li>
+                    Reversi/Othello</li>
+            </ol>
+        </li>
+        <li>
+            Other apps to write which are not necessarily games:
+            <ol>
+                <li>Morse Code translator </li>
+                <li>Random dot stereogram generator</li>
+            </ol>
+        </li>
+
+    </ul>
+</body>
+
+</html>
