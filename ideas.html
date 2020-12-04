@@ -16,15 +16,16 @@
     <ul>
         <li>
             Enhancements to existing games:
-            <div>
-                There is an issue in Chrome where the 'alert' box can be displayed ahead of and block the rendering of 'document' changes
-                done prior to invoking the 'alert'. This is a known issue
-                <a href="https://stackoverflow.com/questions/52953826/chrome-javascript-execution-sequence-problem-with-alert"
-                    target="_blank">https://stackoverflow.com/questions/52953826/chrome-javascript-execution-sequence-problem-with-alert</a>.
-                Some of the games here still suffer from this, so could change the code to use 'setTimeout' to delay the
-                'alert' sufficiently to allow the rendering of 'document' changes. Using a reasonable time duration should
-                not adversely affect the user experience.
-            </div>
+            <ol>
+                <li>
+                    There is an issue in Chrome where the 'alert' box can be displayed ahead of and block the rendering of 'document' changes
+                    done prior to invoking the 'alert'. This is a known issue
+                    <a href="https://stackoverflow.com/questions/52953826/chrome-javascript-execution-sequence-problem-with-alert" target="_blank">https://stackoverflow.com/questions/52953826/chrome-javascript-execution-sequence-problem-with-alert</a>.
+                    Some of the games here still suffer from this, so could change the code to use 'setTimeout' to delay
+                    the 'alert' sufficiently to allow the rendering of 'document' changes. Using a reasonable time duration
+                    should not adversely affect the user experience.
+                </li>
+            </ol>
             <ul>
                 <li>
                     <a href="maze.html">Maze</a>

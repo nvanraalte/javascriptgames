@@ -29,13 +29,13 @@
     The source code is held on GitHub, which has a feature whereby simple html and javascript pages can be automatically published
     on a GitHub url. Free versions of both these features are used to host this simple JavaScript powered site. The site
     and its games can be run from the following URL
-    <a href="https://nvanraalte.github.io/javascriptgames">https://nvanraalte.github.io/javascriptgames</a>.
+    <a href="https://nvanraalte.github.io/javascriptgames" target="_blank">https://nvanraalte.github.io/javascriptgames</a>.
     <ol>
-        <li>You will need to install GitBash. This is a command line program that runs on Windows and will let you get and update
-            the source code.
+        <li>First you will want to get the code which can be done with a Windows utility called Git Bash, which you will need
+            to install. This is a command line program that runs on Windows and will let you get and update the source code.
             <ul>
                 <li>Download GitBash from
-                    <a href="https://gitforwindows.org">https://gitforwindows.org</a>.</li>
+                    <a href="https://gitforwindows.org" target="_blank">https://gitforwindows.org</a>.</li>
                 <li>Run the download file to install GitBash. The default settings will be fine, but if you spot the one to enable
                     symlinks, it will be useful to check this one.</li>
             </ul>
@@ -54,18 +54,29 @@
                     <br>
                     <span class="gitbash gitcommand">cd javascriptgames</span>
                 </li>
-                <li>GitBash now probably shows the directory name with a '
-                    <span class="gitbash gitbranch">(master)</span>' at the end. Type the following command to change to the area (the name in the brackets)
+                <li>GitBash now probably shows the directory name with a
+                    <span class="gitbash gitbranch">(master)</span> at the end. Type the following command to change to the area (the name in the brackets)
                     to the one you can use to upload your improvements to:
                     <br>
                     <span class="gitbash gitcommand">git checkout develop</span>
                 </li>
-                <li>In GitBash the directory should now have a '
-                    <span class="gitbash gitbranch">(develop)</span>' at the end.</li>
+                <li>In GitBash the directory should now have a
+                    <span class="gitbash gitbranch">(develop)</span> at the end.</li>
             </ul>
+Note, you may want to change the GitBash default text editor from the default command line one. To do this, run the following command in GitBash:
+<br>
+<span class="gitbash gitcommand">git config --global core.editor "C:\Windows\System32\notepad.exe"</span>
+        </li>
+        <li>
+            Now you will want to edit and run the code.
+            <br> The JavaScript, HTML, and CSS is all held in text files with a .html extension.
+            <br> As such, these can be edited in a text editor as simple as Notepad.
+            <br> There are also various tools out there specifically for working with these types of resources.
+            <br> One such tool is Visual Studio Code, a free piece of software from Microsoft, which you can download at
+            <a href="https://code.visualstudio.com/download" target="_blank">https://code.visualstudio.com/download</a>
         </li>
         <li>To update the code you may need a GitHub account. The GitHub website is
-            <a href="https://github.com">https://github.com</a>.</li>
+            <a href="https://github.com" target="_blank">https://github.com</a>.</li>
     </ol>
 
 </body>

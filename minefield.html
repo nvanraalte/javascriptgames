@@ -87,6 +87,7 @@
     <script language=javascript>
         var LP_INDEX_NONE = -1;
 
+        var LP_STATE_INITIAL = -1;
         var LP_STATE_PLAYING = 0;
         var LP_STATE_LOOSE = 1;
         var LP_STATE_WIN = 2;
@@ -142,15 +143,14 @@
         function NewGame() {
             var lpCellCount = GameWidth() * GameHeight();
 
-            if (GameMineCount() > lpCellCount) {
+            if (GameMineCount() >= lpCellCount) {
                 alert('There are too many mines for the field. Either increase the field size or choose fewer than ' + lpCellCount + ' mines.');
             } else {
-                lpGameState = LP_STATE_PLAYING;
+                lpGameState = LP_STATE_INITIAL;
 
                 zfCellArray = new Array();
 
                 NewArray();
-                PlantMines();
 
                 var lpCellIndex = 0;
 
@@ -174,7 +174,7 @@
             }
         }
 
-        function PlantMines() {
+        function PlantMines(lpStartCellIndex) {
             var lpCellIndex = 0;
 
             for (lpMineIndex = 0; lpMineIndex < GameMineCount(); lpMineIndex++) {
@@ -182,7 +182,7 @@
 
                 for (lpSkipIndex = 0; lpSkipIndex < lpSkipCount; lpSkipIndex++) {
                     lpCellIndex = IncrementCellIndex(lpCellIndex);
-                    while (zfCellArray[lpCellIndex].HasMine == true) {
+                    while (lpCellIndex == lpStartCellIndex || zfCellArray[lpCellIndex].HasMine == true) {
                         lpCellIndex = IncrementCellIndex(lpCellIndex);
                     }
                 }
@@ -200,6 +200,11 @@
         }
 
         function CellClicked(lpCellIndex) {
+            if (lpGameState == LP_STATE_INITIAL) {
+                PlantMines(lpCellIndex);
+                lpGameState = LP_STATE_PLAYING;
+            }
+
             if (lpGameState == LP_STATE_PLAYING) {
                 if (zfCellArray[lpCellIndex].HasMine) {
                     ClickCell(lpCellIndex);
