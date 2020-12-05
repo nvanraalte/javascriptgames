@@ -8,26 +8,40 @@
 
 <body>
     <style>
+        .field-area {
+            border-collapse: separate;
+        }
+
         .field-cell {
-            width: 20px;
-            height: 20px;
+            white-space: pre;
+            width: 25px;
+            height: 25px;
             background-color: #c0c0c0;
             text-align: center;
             vertical-align: middle;
+
+            font-size: large;
+            font-weight: bold;
         }
 
         .field-covered {
+            border-width: 1px;
+
             border-left: #ffffff solid;
             border-top: #ffffff solid;
-            border-right: #0e0e0e solid;
-            border-bottom: #0e0e0e solid;
+            border-right: #696969 solid;
+            border-bottom: #696969 solid;
         }
 
         .field-opened {
-            border-left: #0e0e0e solid;
-            border-top: #0e0e0e solid;
+            border-width: 1px;
+
+            border-left: #696969 solid;
+            border-top: #696969 solid;
             border-right: #ffffff solid;
             border-bottom: #ffffff solid;
+
+            background-color: lightgray;
         }
 
         .field-mine {
@@ -154,7 +168,7 @@
 
                 var lpCellIndex = 0;
 
-                var zfHTML = '<table>';
+                var zfHTML = '<table class="field-area">';
                 for (lpRowIndex = 0; lpRowIndex < GameHeight(); lpRowIndex++) {
                     zfHTML = zfHTML + '<tr>';
                     for (lpColumnIndex = 0; lpColumnIndex < GameWidth(); lpColumnIndex++) {
